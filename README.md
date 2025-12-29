@@ -1,36 +1,95 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📅 Unical (University Calendar)
 
-## Getting Started
+**Unical** is a smart scheduling utility designed to assist university students in organizing their academic semesters. It features a hybrid scheduling engine that offers Manual, Semi-Automatic, and Fully Automated modes to generate the perfect timetable.
 
-First, run the development server:
+Built for **Al-Balqa Applied University**, this system parses official course offerings to help students avoid conflicts and optimize their time.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 🛠️ Scheduling Modes
+* **Manual Mode:** Select specific course sections visually on the grid. The system highlights conflicts in red if you overlap times.
+* **Semi-Automatic Mode:** Input your preferred courses and define constraints (e.g., "No classes on Sundays" or "Breaks must be > 30 mins"). The system calculates a **Fit Score** to give you the mathematically best schedule.
+* **Automatic Mode:** "Quick Generate" valid schedules based on common patterns. You can **Pin** specific sections and rotate the rest.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🌍 Accessibility & Usability
+* **Bilingual Interface:** Full support for **Arabic (RTL)** and **English (LTR)** with a global toggle.
+* **Guest Mode:** Start building a schedule immediately without creating an account (saved via Local Storage).
+* **Conflict Detection:** Automatic detection of time overlaps.
 
-## Learn More
+### 📤 Export Options
+* **Download as Image:** Save your weekly grid as a PNG/JPG.
+* **Calendar Integration:** Export as an `.ics` file or sync directly with **Google Calendar**.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 💻 Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* **Framework:** [Next.js](https://nextjs.org/) (React-based)
+* **Language:** TypeScript / JavaScript (ES11+)
+* **Data Parsing:** Custom HTML parser for "Jeridat Al-Mawad" (University Course Offerings)
+* **Deployment:** Compatible with Vercel, AWS, or Firebase
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📦 Getting Started
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Prerequisites
+* Node.js (Latest LTS version recommended)
+* npm or yarn
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/your-username/unical.git](https://github.com/your-username/unical.git)
+    cd unical
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  **Run the development server:**
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    ```
+
+4.  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+---
+
+## 🧩 How It Works
+
+1.  **Data Ingestion:** The system parses the raw HTML from the university's "Course Offerings" list.
+2.  **Course Selection:** Users search for courses using names or codes (supports Fuzzy Search for typos).
+3.  **Generation:** The algorithm processes section combinations against user constraints (Time, Day, Instructor).
+4.  **Visualization:** The schedule is rendered on an interactive weekly grid.
+
+---
+
+## 👥 Authors
+
+This project was developed by the **Unical Project Team** (Software Engineering Department):
+
+* **Mohammad Maimon**
+* **Noor-Elrahman Taqatqa**
+* **Ayham Bani-Diab**
+---
+
+## 📄 License
+
+**© 2025 Unical Project Team.** All Rights Reserved.
+
+This software is the intellectual property of the development team:
+* **Mohammad Maimoun**
+* **Noor-Elrahman Taqatqa**
+* **Ayham Bani-Diab**
+
+Unauthorized copying, distribution, or modification of this file, via any medium, is strictly prohibited without the express permission of the authors.
