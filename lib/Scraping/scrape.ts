@@ -6,11 +6,11 @@
  * @param {Array<number>}[params = []] Array of parameters (the length of the array should match ```paramCount``` ).
  * @returns {Promise<Object>} The response data as Json.
  */
-const fetchData = async (
+export const fetchData = async <T = Object>(
   method: string,
   paramCount: number,
   params: Array<number> = [],
-): Promise<Object> => {
+): Promise<Array<T>> => {
   if (params.length != paramCount) {
     throw new ParamsInvalid();
   }
@@ -43,12 +43,12 @@ const fetchData = async (
       method: "POST",
     },
   );
-  return formatJsonData(await res.text());
+  return formatJsonData(await res.text()) as Array<T>;
 };
 
 /**
  * replace every single qoute with double, then return it as json
- * 
+ *
  */
 const formatJsonData = (data: string): Object => {
   const jsonData = data.replace(/'/g, '"');
