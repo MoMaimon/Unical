@@ -9,27 +9,7 @@ import { Model } from "mongoose";
 // type degreeType = { name: string; id: string };
 
 export const fetchAndSaveDegrees = async () => {
-  try {
-    const data = await fetchData<selectType>("getDegrees", 0);
-    await connect();
-    const bulk = data.map((degree) => ({
-      updateOne: {
-        filter: { _id: degree.id },
-        update: { $set: { name: degree.name } },
-        upsert: true,
-      },
-    }));
-    if (bulk.length > 0) {
-      const result = await Degree.bulkWrite(bulk);
-      console.log(
-        `Sync complete: ${result.upsertedCount} inserted, ${result.modifiedCount} updated.`,
-      );
-    } else {
-      console.log("No data fetched from API.");
-    }
-  } catch (error: any) {
-    console.log("error");
-  }
+  fetchAndSave("getDegrees", Degree);
 };
 
 export const fetchAndSaveColleges = async () => {
