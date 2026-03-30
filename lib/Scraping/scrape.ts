@@ -2,12 +2,12 @@ import { Model } from "mongoose";
 import connect from "../db/db";
 
 /**
- * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp) 
+ * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp)
  * by simulating an RMI (Remote Method Invocation) POST request.
  * * @template T - The expected shape of the objects within the returned array. Defaults to Object.
  * @param {string} method - The specific header method value or endpoint identifier to call.
  * @param {number} paramCount - The exact number of parameters being passed. Must match the length of the `params` array.
- * @param {Array<number>} [params=[]] - Array of numerical parameters required by the requested method. 
+ * @param {Array<number>} [params=[]] - Array of numerical parameters required by the requested method.
  * @throws {ParamsInvalid} Throws if the length of the `params` array does not exactly match `paramCount`.
  * @throws {ParamsCountInvalid} Throws if `paramCount` is a negative number.
  * @returns {Promise<Array<T>>} A promise that resolves to an array of objects of type T.
@@ -53,7 +53,7 @@ export const fetchData = async <T = Object>(
 };
 
 /**
- * Sanitizes and parses a malformed JSON string by replacing all single quotes 
+ * Sanitizes and parses a malformed JSON string by replacing all single quotes
  * with double quotes to ensure valid JSON syntax before parsing.
  *
  * @param {string} data - The raw string response from the API.
@@ -64,14 +64,13 @@ const formatJsonData = (data: string): Object => {
   return JSON.parse(jsonData);
 };
 
-
 /**
  * Fetches data from an external API and synchronizes it with a MongoDB database using Mongoose.
  * Uses `bulkWrite` to perform efficient upsert operations (inserting new records or updating existing ones).
  * * @param {string} method - The API method or endpoint identifier used to fetch the data.
  * @param {Model<any, {}, {}, {}, any, any, any>} model - The Mongoose model corresponding to the database collection to be updated.
  * @param {number} [paramCount=0] - The number of parameters expected by the fetch call. Defaults to 0.
- * @param {any} [params=null] - Optional configuration object containing additional parameters. 
+ * @param {any} [params=null] - Optional configuration object containing additional parameters.
  * If provided, it should contain a `data` string (e.g., "departments") and a `params` object containing query values.
  * @throws {Error} Throws an error if an unsupported `params.data` type is provided, preventing bulk operation creation.
  * @returns {Promise<void>} A promise that resolves when the synchronization is complete.
@@ -83,48 +82,44 @@ export const fetchAndSave = async (
   paramCount: number = 0,
   params: params = null,
 ) => {
-  try {
-    const data = await fetchData<selectType>(
-      method,
-      paramCount,
-      params ? [...Object.values(params.params)] : [],
+  const data = await fetchData<selectType>(
+    method,
+    paramCount,
+    params ? [...Object.values(params.params)] : [],
+  );
+
+  await connect();
+
+  let bulk;
+  if (!params) {
+    bulk = data.map((value) => ({
+      updateOne: {
+        filter: { _id: value.id },
+        update: { $set: { name: value.name } },
+        upsert: true,
+      },
+    }));
+  } else if (params.data === "departments") {
+    bulk = data.map((value) => ({
+      updateOne: {
+        filter: { _id: value.id },
+        update: {
+          $set: { name: value.name, college: params.params.college_id },
+        },
+        upsert: true,
+      },
+    }));
+  }
+  if (!bulk) {
+    throw new InvalidConfiguration();
+  }
+
+  if (bulk.length > 0) {
+    const result = await model.bulkWrite(bulk);
+    console.log(
+      `Sync complete: ${result.upsertedCount} inserted, ${result.modifiedCount} updated.`,
     );
-
-    await connect();
-
-    let bulk;
-    if (!params) {
-      bulk = data.map((value) => ({
-        updateOne: {
-          filter: { _id: value.id },
-          update: { $set: { name: value.name } },
-          upsert: true,
-        },
-      }));
-    } else if (params.data === "departments") {
-      bulk = data.map((value) => ({
-        updateOne: {
-          filter: { _id: value.id },
-          update: {
-            $set: { name: value.name, college: params.params.college_id },
-          },
-          upsert: true,
-        },
-      }));
-    }
-    if (!bulk) {
-      throw new Error(); //TODO make custom exception
-    }
-
-    if (bulk.length > 0) {
-      const result = await model.bulkWrite(bulk);
-      console.log(
-        `Sync complete: ${result.upsertedCount} inserted, ${result.modifiedCount} updated.`,
-      );
-    } else {
-      console.log("No data fetched from API.");
-    }
-  } catch (error: any) {
-    console.log("error", error);
+  } else {
+    console.log("No data fetched from API.");
   }
 };
