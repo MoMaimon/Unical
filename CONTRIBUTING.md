@@ -4,7 +4,7 @@ Thank you for your interest in contributing to **Unical**! As a team project, we
 
 Please review the following guidelines before submitting a Pull Request (PR).
 
-## 🛠️ Development Setup
+## Development Setup
 
 1.  **Framework:** We use **Next.js** for the frontend and server-side logic.
 2.  **Node Version:** Ensure you are using a stable LTS version of Node.js.
@@ -13,7 +13,7 @@ Please review the following guidelines before submitting a Pull Request (PR).
     npm install
     ```
 
-## 📐 Coding Standards
+## Coding Standards
 
 To maintain code quality and readability, we follow these rules:
 
@@ -29,9 +29,8 @@ To maintain code quality and readability, we follow these rules:
          */
         ```
 * **Variable Naming:** Use clear, descriptive variable names (e.g., `courseSection` instead of `cs`).
-* **No Internal Dependencies:** Do not write code that attempts to access internal university databases or private APIs. We strictly use public data (Jeridat Al-Mawad).
 
-## 📝 Commit Message Guidelines
+## Commit Message Guidelines
 
 To keep our history clean and readable, we follow the **Conventional Commits** specification.
 
@@ -57,28 +56,20 @@ To keep our history clean and readable, we follow the **Conventional Commits** s
 ### Rules:
 1.  **Use the imperative mood** in the subject line ("add" not "added", "fix" not "fixed").
 2.  **No period** at the end of the subject line.
-3.  **Scope is optional** but recommended to indicate which part of the app you touched (e.g., `ui`, `api`, `parser`).
+3.  **Scope is optional** but recommended to indicate which part of the app you touched (e.g., `ui`, `api`, `scraping`).
 
-## 🧪 Testing Guidelines
 
-We prioritize stability, especially for the scheduling engine.
+## Bug Reporting
 
-* **Test Coverage:** Critical modules (specifically the Scheduling Engine and Conflict Detection) must maintain **at least 80% code coverage**.
-* **Automated Testing:** Ensure your components are designed to be easily testable.
-* **Performance:** Code changes should not degrade the response time. Schedule generation must remain under **3 seconds**.
+If you find a bug, please open an issue including:
+1.  Steps to reproduce the crash.
+2.  Current behavior vs. expected behavior.
 
-## 🐛 Bug Reporting
+## Pull Request Process
 
-If you find a bug (e.g., the parser fails on a specific HTML structure), please open an issue including:
-1.  The specific course or section causing the error.
-2.  Steps to reproduce the crash.
-3.  Current behavior vs. expected behavior.
-
-## 🚀 Pull Request Process
-
-1.  Create a new branch for your feature (`git checkout -b feature/AmazingFeature`).
+1.  Create a new branch for your feature (`git checkout -b feat/AmazingFeature`).
 2.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
-3.  Push to the branch (`git push origin feature/AmazingFeature`).
+3.  Push to the branch (`git push origin feat/AmazingFeature`).
 4.  Open a Pull Request.
 
 ---
