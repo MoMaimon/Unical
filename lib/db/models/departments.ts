@@ -4,7 +4,7 @@ const departmentsSchema = new Schema(
   {
     _id: { type: Number, required: true },
     name: { type: String, required: true },
-    college: { type: mongoose.Schema.Types.ObjectId, ref: "College" },
+    college: { type: Number, ref: "College" },
   },
   {
     timestamps: true,

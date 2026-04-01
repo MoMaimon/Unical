@@ -17,6 +17,8 @@ export const fetchData = async <T = Object>(
   paramCount: number,
   params: Array<number> = [],
 ): Promise<Array<T>> => {
+  console.log("called");
+
   if (params.length != paramCount) {
     throw new ParamsInvalid();
   }
@@ -82,33 +84,56 @@ export const fetchAndSave = async (
   paramCount: number = 0,
   params: params = null,
 ) => {
-  const data = await fetchData<selectType>(
-    method,
-    paramCount,
-    params ? [...Object.values(params.params)] : [],
-  );
+  const data = await fetchData<
+    selectType & { hours?: { no: string; name: string; hours: string } }
+  >(method, paramCount, params ? [...Object.values(params.params)] : []);
 
   await connect();
 
   let bulk;
   if (!params) {
-    bulk = data.map((value) => ({
-      updateOne: {
-        filter: { _id: value.id },
-        update: { $set: { name: value.name } },
-        upsert: true,
-      },
-    }));
-  } else if (params.data === "departments") {
-    bulk = data.map((value) => ({
-      updateOne: {
-        filter: { _id: value.id },
-        update: {
-          $set: { name: value.name, college: params.params.college_id },
+    bulk = data.map((value) => {
+      const recordId = "id" in value ? value.id : null;
+      return {
+        updateOne: {
+          filter: { _id: recordId },
+          update: { $set: { name: value.name } },
+          upsert: true,
         },
-        upsert: true,
-      },
-    }));
+      };
+    });
+  } else if (params.data === "departments") {
+    bulk = data.map((value) => {
+      const recordId = "id" in value ? value.id : null;
+      return {
+        updateOne: {
+          filter: { _id: recordId },
+          update: {
+            $set: { name: value.name, college: params.params.college_id },
+          },
+          upsert: true,
+        },
+      };
+    });
+  } else if (params.data === "courses") {
+    bulk = data.map((value) => {
+      const recordId = "no" in value ? value.no : null;
+      return {
+        updateOne: {
+          filter: { _id: recordId },
+          update: {
+            $set: {
+              name: value.name,
+              degree: (params.params as course).degree_id,
+              college: params.params.college_id,
+              department: (params.params as course).department_id,
+              hours: (value as any).hours?.hours || (value as any).hours || 0,
+            },
+          },
+          upsert: true,
+        },
+      };
+    });
   }
   if (!bulk) {
     throw new InvalidConfiguration();
@@ -123,3 +148,32 @@ export const fetchAndSave = async (
     console.log("No data fetched from API.");
   }
 };
+
+export const getPagesCount = async (
+  degree_id: number,
+  college_id: number,
+  department_id: number,
+): Promise<number> => {
+  const res = await fetch(
+    "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod",
+    {
+      headers: {
+        accept: "*/*",
+        "accept-language": "en-US,en;q=0.9,ar;q=0.8",
+        "content-type": "application/x-www-form-urlencoded",
+        "sec-ch-ua":
+          '"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "same-origin",
+        Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
+      },
+      body: `method=${"getCoursesPagesCount"}&paramsCount=${3}&param0=${degree_id}&param1=${college_id}&param2=${department_id}`,
+      method: "POST",
+    },
+  );
+  return Number(await res.text());
+};
+
