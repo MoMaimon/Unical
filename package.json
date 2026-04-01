@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.1.1",
+    "mongodb": "^7.1.1",
+    "mongoose": "^9.3.3",
+    "next": "^16.2.1",
+    "p-limit": "^7.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -21,6 +24,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
