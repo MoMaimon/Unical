@@ -3,6 +3,14 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGODB_URI;
 
 const connect = async () => {
+  // Validate environment variable on startup
+  if (!MONGODB_URI) {
+    throw new Error(
+      "MONGODB_URI environment variable is not defined. " +
+        "Please define it in your .env.local or environment configuration."
+    );
+  }
+
   const connectionState = mongoose.connection.readyState;
   if (connectionState === 1) {
     console.log("DB is already connected");
@@ -14,7 +22,7 @@ const connect = async () => {
     return;
   }
   try {
-    await mongoose.connect(MONGODB_URI!, {
+    await mongoose.connect(MONGODB_URI, {
       dbName: "university",
       bufferCommands: true,
     });
