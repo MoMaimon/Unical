@@ -1,7 +1,7 @@
-type selectType =
+export type selectType =
   | { name: string; id: string }
   | { no: string; name: string; hours: string };
-type params = {
+export type params = {
   data: string;
   params: department | course;
 } | null;
