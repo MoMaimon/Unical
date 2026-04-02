@@ -1,5 +1,6 @@
 import { Model } from "mongoose";
 import connect from "../db/db";
+import { selectType, params } from "./scrape_types";
 
 /**
  * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp)
