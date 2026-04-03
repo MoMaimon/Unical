@@ -1,5 +1,4 @@
 import pLimit from "p-limit";
-import { _QueryFilterLooseId } from "mongoose";
 import connect from "@/lib/db/db";
 import College from "@/lib/db/models/colleges";
 import Degree from "@/lib/db/models/degrees";
@@ -253,7 +252,7 @@ export const getAllCoursesByDepartmentId = async (
 interface GetCoursesParams {
   page: number;
   limit?: number;
-  filter?: _QueryFilterLooseId<courseResponse>;
+  filter?: Record<string, any>;
 }
 
 /**
