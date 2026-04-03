@@ -1,4 +1,4 @@
-import { getCoursesPage } from "@/lib/Scraping/scrape_service";
+import { getCoursesPage, syncCourses } from "@/lib/Scraping/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -10,12 +10,12 @@ export const GET = async (req: NextRequest) => {
 
     const filter: Record<string, any> = {};
 
-    const collegeId = searchParams.get("college_id");
+    const collegeId = searchParams.get("college");
     if (collegeId) {
       filter.college = Number(collegeId);
     }
 
-    const departmentId = searchParams.get("department_id");
+    const departmentId = searchParams.get("department");
     if (departmentId) {
       filter.department = Number(departmentId);
     }
@@ -59,7 +59,7 @@ export const POST = async (req: NextRequest) => {
         { status: 400 },
       );
     }
-
+    await syncCourses(Number(collegeId));
     return NextResponse.json(
       {
         message: "Courses synced successfully.",

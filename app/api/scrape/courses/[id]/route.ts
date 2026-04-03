@@ -8,14 +8,7 @@ export const GET = async (
   try {
     const { id } = await params;
 
-    if (!Number.isInteger(Number(id))) {
-      return NextResponse.json(
-        { message: "Invalid Course ID" },
-        { status: 400 },
-      );
-    }
-
-    const course = await getCourse(Number(id));
+    const course = await getCourse(id);
 
     if (!course) {
       return NextResponse.json(

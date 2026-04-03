@@ -164,10 +164,10 @@ export const getDepartment = async (
 
 /**
  * Retrieves a single course by its ID.
- * @param {number} id - The ID of the course.
+ * @param {string} id - The ID of the course.
  * @returns {Promise<courseResponse | null>} The course object, or null if not found.
  */
-export const getCourse = async (id: number): Promise<courseResponse | null> => {
+export const getCourse = async (id: string): Promise<courseResponse | null> => {
   await connect();
   const course = await Course.findById(id).lean<courseResponse>();
   return course;
