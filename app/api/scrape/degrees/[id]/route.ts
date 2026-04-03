@@ -10,7 +10,7 @@ export const GET = async (
 
     if (!Number.isInteger(Number(id))) {
       return NextResponse.json(
-        { message: "Invalid Course ID" },
+        { message: "Invalid Degree ID" },
         { status: 400 },
       );
     }
@@ -23,7 +23,7 @@ export const GET = async (
     }
 
     return NextResponse.json(
-      { message: "Course fetched successfully.", data: data },
+      { message: "Degree fetched successfully.", data: data },
       { status: 200 },
     );
   } catch (error: any) {
