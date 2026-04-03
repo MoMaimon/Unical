@@ -1,6 +1,21 @@
 import { Model } from "mongoose";
 import connect from "../db/db";
-import { selectType , params, course } from "./scrape_types";
+import { FetchParams } from "./scrape_types";
+
+const API_URL = "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod";
+const DEFAULT_HEADERS = {
+  accept: "*/*",
+  "accept-language": "en-US,en;q=0.9,ar;q=0.8",
+  "content-type": "application/x-www-form-urlencoded",
+  "sec-ch-ua":
+    '"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"',
+  "sec-ch-ua-mobile": "?0",
+  "sec-ch-ua-platform": '"Windows"',
+  "sec-fetch-dest": "empty",
+  "sec-fetch-mode": "cors",
+  "sec-fetch-site": "same-origin",
+  Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
+};
 
 /**
  * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp)
@@ -18,40 +33,30 @@ export const fetchData = async <T = Object>(
   paramCount: number,
   params: Array<number> = [],
 ): Promise<Array<T>> => {
-  console.log("called");
-
   if (params.length != paramCount) {
     throw new ParamsInvalid();
   }
+
   if (paramCount < 0) {
     throw new ParamsCountInvalid();
   }
-  let paramsString: string = "";
+
+  const bodyData = new URLSearchParams();
+
+  bodyData.append("method", method);
+  bodyData.append("paramsCount", paramCount.toString());
+
   if (paramCount > 0) {
     params.forEach((param, index) => {
-      paramsString += `&param${index}=${param}`;
+      bodyData.append(`param${index}`, param.toString());
     });
   }
-  const res = await fetch(
-    "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod",
-    {
-      headers: {
-        accept: "*/*",
-        "accept-language": "en-US,en;q=0.9,ar;q=0.8",
-        "content-type": "application/x-www-form-urlencoded",
-        "sec-ch-ua":
-          '"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
-      },
-      body: `method=${method}&paramsCount=${paramCount}${paramsString}`,
-      method: "POST",
-    },
-  );
+  const res = await fetch(API_URL, {
+    headers: DEFAULT_HEADERS,
+    body: bodyData,
+    method: "POST",
+  });
+
   return formatJsonData(await res.text()) as Array<T>;
 };
 
@@ -67,79 +72,27 @@ const formatJsonData = (data: string): Object => {
   return JSON.parse(jsonData);
 };
 
+
 /**
  * Fetches data from an external API and synchronizes it with a MongoDB database using Mongoose.
  * Uses `bulkWrite` to perform efficient upsert operations (inserting new records or updating existing ones).
- * * @param {string} method - The API method or endpoint identifier used to fetch the data.
- * @param {Model<any, {}, {}, {}, any, any, any>} model - The Mongoose model corresponding to the database collection to be updated.
+ * @param {string} method - The API method or endpoint identifier used to fetch the data.
+ * @param {Model<any>} model - The Mongoose model corresponding to the database collection to be updated.
  * @param {number} [paramCount=0] - The number of parameters expected by the fetch call. Defaults to 0.
- * @param {any} [params=null] - Optional configuration object containing additional parameters.
+ * @param {any} [paramList=[]] - Optional configuration object containing additional parameters.
  * If provided, it should contain a `data` string (e.g., "departments") and a `params` object containing query values.
  * @throws {Error} Throws an error if an unsupported `params.data` type is provided, preventing bulk operation creation.
  * @returns {Promise<void>} A promise that resolves when the synchronization is complete.
  */
 
-export const fetchAndSave = async (
-  method: string,
-  model: Model<any, {}, {}, {}, any, any, any>,
-  paramCount: number = 0,
-  params: params = null,
+export const fetchAndSave = async <T>(
+  { method, model, paramCount = 0, paramList = [] }: FetchParams,
+  buildUpsertDoc: (item: T) => any,
 ) => {
-  const data = await fetchData<
-    selectType & { hours?: { no: string; name: string; hours: string } }
-  >(method, paramCount, params ? [...Object.values(params.params)] : []);
-
+  const data = await fetchData<T>(method, paramCount, paramList);
   await connect();
 
-  let bulk;
-  if (!params) {
-    bulk = data.map((value) => {
-      const recordId = "id" in value ? value.id : null;
-      return {
-        updateOne: {
-          filter: { _id: recordId },
-          update: { $set: { name: value.name } },
-          upsert: true,
-        },
-      };
-    });
-  } else if (params.data === "departments") {
-    bulk = data.map((value) => {
-      const recordId = "id" in value ? value.id : null;
-      return {
-        updateOne: {
-          filter: { _id: recordId },
-          update: {
-            $set: { name: value.name, college: params.params.college_id },
-          },
-          upsert: true,
-        },
-      };
-    });
-  } else if (params.data === "courses") {
-    bulk = data.map((value) => {
-      const recordId = "no" in value ? value.no : null;
-      return {
-        updateOne: {
-          filter: { _id: recordId },
-          update: {
-            $set: {
-              name: value.name,
-              degree: (params.params as course).degree_id,
-              college: params.params.college_id,
-              department: (params.params as course).department_id,
-              hours: (value as any).hours?.hours || (value as any).hours || 0,
-            },
-          },
-          upsert: true,
-        },
-      };
-    });
-  }
-  if (!bulk) {
-    throw new InvalidConfiguration();
-  }
-
+  const bulk = data.map(buildUpsertDoc);
   if (bulk.length > 0) {
     const result = await model.bulkWrite(bulk);
     console.log(
@@ -151,30 +104,22 @@ export const fetchAndSave = async (
 };
 
 export const getPagesCount = async (
-  degree_id: number,
-  college_id: number,
-  department_id: number,
+  degreeId: number,
+  collegeId: number,
+  departmentId: number,
 ): Promise<number> => {
-  const res = await fetch(
-    "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod",
-    {
-      headers: {
-        accept: "*/*",
-        "accept-language": "en-US,en;q=0.9,ar;q=0.8",
-        "content-type": "application/x-www-form-urlencoded",
-        "sec-ch-ua":
-          '"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"',
-        "sec-ch-ua-mobile": "?0",
-        "sec-ch-ua-platform": '"Windows"',
-        "sec-fetch-dest": "empty",
-        "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-origin",
-        Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
-      },
-      body: `method=${"getCoursesPagesCount"}&paramsCount=${3}&param0=${degree_id}&param1=${college_id}&param2=${department_id}`,
-      method: "POST",
-    },
-  );
+  const bodyData = new URLSearchParams();
+
+  bodyData.append("method", "getCoursesPagesCount");
+  bodyData.append("paramsCount", "3");
+  bodyData.append("param0", degreeId.toString());
+  bodyData.append("param1", collegeId.toString());
+  bodyData.append("param3", departmentId.toString());
+
+  const res = await fetch(API_URL, {
+    headers: DEFAULT_HEADERS,
+    body: bodyData,
+    method: "POST",
+  });
   return Number(await res.text());
 };
-

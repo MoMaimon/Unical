@@ -1,53 +1,66 @@
-export type selectType =
-  | { name: string; id: string }
-  | { no: string; name: string; hours: string };
-export type params = {
-  data: string;
-  params: department | course;
-} | null;
+import { Model } from "mongoose";
 
-type department = { college_id: number };
-
-export type course = {
-  degree_id: number;
-  college_id: number;
-  department_id: number;
-  page: number;
-};
-
-export type courseResponse = {
+interface BaseSchema {
   _id: number;
   __v: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface DegreeSchema extends BaseSchema {
+  name: string;
+}
+
+
+export interface CollegeSchema extends BaseSchema {
+  name: string;
+}
+
+
+export interface DepartmentSchema extends BaseSchema{
+  name: string;
+  college: number;
+};
+
+export interface CourseSchema extends BaseSchema {
   name: string;
   degree: number;
   college: number;
   department: number;
   hours: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
+}
 
-export type collegeResponse = {
-  _id: number;
-  __v: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
-export type degreeResponse = {
-  _id: number;
-  __v: number;
-  name: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
 
-export type departmentResponse = {
-  _id: number;
-  __v: number;
+export interface FetchParams {
+  method: string;
+  model: Model<any>;
+  paramCount?: number;
+  paramList?: Array<number>;
+}
+
+export interface DegreeApiResponse {
+  id: string;
   name: string;
-  college: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
+}
+
+export interface CollegeApiResponse {
+  id: string;
+  name: string;
+}
+
+export interface CollegeApiResponse {
+  id: string;
+  name: string;
+}
+
+export interface DepartmentApiResponse {
+  id: string;
+  name: string;
+}
+
+export interface CourseApiResponse {
+  no: string;
+  name: string;
+  hours: string;
+}

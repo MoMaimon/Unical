@@ -6,10 +6,14 @@ import Department from "@/lib/db/models/departments";
 import { fetchAndSave, getPagesCount } from "@/lib/Scraping/scrape";
 import Course from "@/lib/db/models/courses";
 import {
-  collegeResponse,
-  courseResponse,
-  degreeResponse,
-  departmentResponse,
+  CollegeApiResponse,
+  CollegeSchema,
+  CourseApiResponse,
+  CourseSchema,
+  DegreeApiResponse,
+  DegreeSchema,
+  DepartmentApiResponse,
+  DepartmentSchema,
 } from "./scrape_types";
 
 /**
@@ -51,7 +55,16 @@ const getDepartmentsIds = async (
  * @returns {Promise<void>}
  */
 export const syncDegrees = async () => {
-  await fetchAndSave("getDegrees", Degree);
+  await fetchAndSave<DegreeApiResponse>(
+    { method: "getDegrees", model: Degree },
+    (degree) => ({
+      updateOne: {
+        filter: { _id: degree.id },
+        update: { $set: { name: degree.name } },
+        upsert: true,
+      },
+    }),
+  );
 };
 
 /**
@@ -59,7 +72,16 @@ export const syncDegrees = async () => {
  * @returns {Promise<void>}
  */
 export const syncColleges = async () => {
-  await fetchAndSave("getColleges", College);
+  await fetchAndSave<CollegeApiResponse>(
+    { method: "getColleges", model: College },
+    (college) => ({
+      updateOne: {
+        filter: { _id: college.id },
+        update: { $set: { name: college.name } },
+        upsert: true,
+      },
+    }),
+  );
 };
 
 /**
@@ -70,10 +92,21 @@ export const syncColleges = async () => {
 export const syncDepartments = async () => {
   const colleges = await getCollegesIds();
   for (const college of colleges) {
-    await fetchAndSave("getDepartments", Department, 1, {
-      data: "departments",
-      params: { college_id: college },
-    });
+    await fetchAndSave<DepartmentApiResponse>(
+      {
+        method: "getDepartments",
+        model: Department,
+        paramCount: 1,
+        paramList: [college],
+      },
+      (department) => ({
+        updateOne: {
+          filter: { _id: department.id },
+          update: { $set: { name: department.name, college: college } },
+          upsert: true,
+        },
+      }),
+    );
   }
 };
 
@@ -103,15 +136,27 @@ export const syncCourses = async (college: number) => {
           if (!pagesCount || pagesCount < 1) return;
 
           for (let i = 1; i <= pagesCount; i++) {
-            await fetchAndSave("getCourses", Course, 4, {
-              data: "courses",
-              params: {
-                degree_id: degree,
-                college_id: college,
-                department_id: department,
-                page: i,
+            await fetchAndSave<CourseApiResponse>(
+              {
+                method: "getCourses",
+                model: Course,
+                paramCount: 4,
+                paramList: [degree, college, department, i],
               },
-            });
+              (course) => ({
+                updateOne: {
+                  filter: { _id: course.no },
+                  update: {
+                    $set: {
+                      name: course.name,
+                      college: college,
+                      hours: course.hours,
+                    },
+                  },
+                  upsert: true,
+                },
+              }),
+            );
             await delay(300); // 300ms delay between pages
           }
         }),
@@ -128,92 +173,90 @@ export const syncCourses = async (college: number) => {
 /**
  * Retrieves a single degree by its ID.
  * @param {number} id - The ID of the degree.
- * @returns {Promise<degreeResponse | null>} The degree object, or null if not found.
+ * @returns {Promise<DegreeSchema | null>} The degree object, or null if not found.
  */
-export const getDegree = async (id: number): Promise<degreeResponse | null> => {
+export const getDegree = async (id: number): Promise<DegreeSchema | null> => {
   await connect();
-  const degree = await Degree.findById(id).lean<degreeResponse>();
+  const degree = await Degree.findById(id).lean<DegreeSchema>();
   return degree;
 };
 
 /**
  * Retrieves a single department by its ID.
  * @param {number} id - The ID of the department.
- * @returns {Promise<departmentResponse | null>} The department object, or null if not found.
+ * @returns {Promise<DepartmentSchema | null>} The department object, or null if not found.
  */
-export const getCollege = async (
-  id: number,
-): Promise<collegeResponse | null> => {
+export const getCollege = async (id: number): Promise<CollegeSchema | null> => {
   await connect();
-  const college = await College.findById(id).lean<collegeResponse>();
+  const college = await College.findById(id).lean<CollegeSchema>();
   return college;
 };
 
 /**
  * Retrieves a single department by its ID.
  * @param {number} id - The ID of the department.
- * @returns {Promise<departmentResponse | null>} The department object, or null if not found.
+ * @returns {Promise<DepartmentSchema | null>} The department object, or null if not found.
  */
 export const getDepartment = async (
   id: number,
-): Promise<departmentResponse | null> => {
+): Promise<DepartmentSchema | null> => {
   await connect();
-  const department = await Department.findById(id).lean<departmentResponse>();
+  const department = await Department.findById(id).lean<DepartmentSchema>();
   return department;
 };
 
 /**
  * Retrieves a single course by its ID.
  * @param {string} id - The ID of the course.
- * @returns {Promise<courseResponse | null>} The course object, or null if not found.
+ * @returns {Promise<CourseSchema | null>} The course object, or null if not found.
  */
-export const getCourse = async (id: string): Promise<courseResponse | null> => {
+export const getCourse = async (id: string): Promise<CourseSchema | null> => {
   await connect();
-  const course = await Course.findById(id).lean<courseResponse>();
+  const course = await Course.findById(id).lean<CourseSchema>();
   return course;
 };
 
 /**
  * Retrieves all degrees stored in the database.
- * * @returns {Promise<degreeResponse[]>} An array of all degrees.
+ * * @returns {Promise<DegreeSchema[]>} An array of all degrees.
  */
-export const getAllDegrees = async (): Promise<degreeResponse[]> => {
+export const getAllDegrees = async (): Promise<DegreeSchema[]> => {
   await connect();
-  const degrees = await Degree.find({}).lean<degreeResponse[]>();
+  const degrees = await Degree.find({}).lean<DegreeSchema[]>();
   return degrees;
 };
 
 /**
  * Retrieves all colleges stored in the database.
- * * @returns {Promise<collegeResponse[]>} An array of all colleges.
+ * * @returns {Promise<CollegeSchema[]>} An array of all colleges.
  */
-export const getAllColleges = async (): Promise<collegeResponse[]> => {
+export const getAllColleges = async (): Promise<CollegeSchema[]> => {
   await connect();
-  const colleges = await College.find({}).lean<collegeResponse[]>();
+  const colleges = await College.find({}).lean<CollegeSchema[]>();
   return colleges;
 };
 
 /**
  * Retrieves all departments stored in the database.
- * * @returns {Promise<departmentResponse[]>} An array of all departments.
+ * * @returns {Promise<DepartmentSchema[]>} An array of all departments.
  */
-export const getAllDepartments = async (): Promise<departmentResponse[]> => {
+export const getAllDepartments = async (): Promise<DepartmentSchema[]> => {
   await connect();
-  const departments = await Department.find({}).lean<departmentResponse[]>();
+  const departments = await Department.find({}).lean<DepartmentSchema[]>();
   return departments;
 };
 
 /**
  * Retrieves all departments that belong to a specific college.
  * * @param {number} college_id - The ID of the college.
- * @returns {Promise<departmentResponse[]>} An array of matching departments.
+ * @returns {Promise<DepartmentSchema[]>} An array of matching departments.
  */
 export const getAllDepartmentsByCollegeId = async (
   college_id: number,
-): Promise<departmentResponse[]> => {
+): Promise<DepartmentSchema[]> => {
   await connect();
   const departments = await Department.find({ college: college_id }).lean<
-    departmentResponse[]
+    DepartmentSchema[]
   >();
   return departments;
 };
@@ -222,14 +265,14 @@ export const getAllDepartmentsByCollegeId = async (
  * Retrieves all courses that belong to a specific college.
  * Note: For large datasets, consider using pagination instead.
  * * @param {number} college_id - The ID of the college.
- * @returns {Promise<courseResponse[]>} An array of matching courses.
+ * @returns {Promise<CourseSchema[]>} An array of matching courses.
  */
 export const getAllCoursesByCollegeId = async (
   college_id: number,
-): Promise<courseResponse[]> => {
+): Promise<CourseSchema[]> => {
   await connect();
   const courses = await Course.find({ college: college_id }).lean<
-    courseResponse[]
+    CourseSchema[]
   >();
   return courses;
 };
@@ -237,14 +280,14 @@ export const getAllCoursesByCollegeId = async (
 /**
  * Retrieves all courses that belong to a specific department.
  * * @param {number} department_id - The ID of the department.
- * @returns {Promise<courseResponse[]>} An array of matching courses.
+ * @returns {Promise<CourseSchema[]>} An array of matching courses.
  */
 export const getAllCoursesByDepartmentId = async (
   department_id: number,
-): Promise<courseResponse[]> => {
+): Promise<CourseSchema[]> => {
   await connect();
   const courses = await Course.find({ department: department_id }).lean<
-    courseResponse[]
+    CourseSchema[]
   >();
   return courses;
 };
@@ -260,7 +303,7 @@ interface GetCoursesParams {
  * Useful for displaying large directories of courses without overloading the frontend.
  *
  * @param {GetCoursesParams} params - The pagination and filtering configuration.
- * @returns {Promise<courseResponse[]>} An array of courses for the requested page.
+ * @returns {Promise<CourseSchema[]>} An array of courses for the requested page.
  */
 export const getCoursesPage = async ({
   page,
@@ -273,7 +316,7 @@ export const getCoursesPage = async ({
   const courses = await Course.find(filter)
     .skip(skipIndex)
     .limit(limit)
-    .lean<courseResponse[]>();
+    .lean<CourseSchema[]>();
 
   return courses;
 };
