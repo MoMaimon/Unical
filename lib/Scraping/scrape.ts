@@ -74,15 +74,17 @@ const formatJsonData = (data: string): Object => {
 
 
 /**
- * Fetches data from an external API and synchronizes it with a MongoDB database using Mongoose.
- * Uses `bulkWrite` to perform efficient upsert operations (inserting new records or updating existing ones).
- * @param {string} method - The API method or endpoint identifier used to fetch the data.
- * @param {Model<any>} model - The Mongoose model corresponding to the database collection to be updated.
- * @param {number} [paramCount=0] - The number of parameters expected by the fetch call. Defaults to 0.
- * @param {any} [paramList=[]] - Optional configuration object containing additional parameters.
- * If provided, it should contain a `data` string (e.g., "departments") and a `params` object containing query values.
- * @throws {Error} Throws an error if an unsupported `params.data` type is provided, preventing bulk operation creation.
- * @returns {Promise<void>} A promise that resolves when the synchronization is complete.
+ * Fetches data from the external API and synchronizes it with the MongoDB database using Mongoose bulk operations.
+ * This function decouples the fetch logic from the database schema by allowing the caller to define the mapping strategy.
+ *
+ * @template T - The expected shape of the data objects returned by the API.
+ * @param {FetchParams} config - Configuration object for the fetch request and database model.
+ * @param {string} config.method - The RMI method name to invoke on the external API.
+ * @param {Model<any>} config.model - The Mongoose model where the data should be saved.
+ * @param {number} [config.paramCount=0] - The expected number of parameters for the API call. Defaults to 0.
+ * @param {number[]} [config.paramList=[]] - An array of numerical parameters to send with the API request.
+ * @param {(item: T) => any} buildUpsertDoc - A callback function that transforms a fetched item into a Mongoose bulk write operation object (e.g., `updateOne` with `upsert: true`).
+ * @returns {Promise<void>} Resolves when the synchronization and database bulk write are complete.
  */
 
 export const fetchAndSave = async <T>(
@@ -102,6 +104,17 @@ export const fetchAndSave = async <T>(
     console.log("No data fetched from API.");
   }
 };
+
+
+/**
+ * Queries the external API to determine the total number of pagination pages available
+ * for a specific combination of degree, college, and department courses.
+ *
+ * @param {number} degreeId - The unique identifier for the degree.
+ * @param {number} collegeId - The unique identifier for the college.
+ * @param {number} departmentId - The unique identifier for the department.
+ * @returns {Promise<number>} A promise that resolves to the total number of pages.
+ */
 
 export const getPagesCount = async (
   degreeId: number,
