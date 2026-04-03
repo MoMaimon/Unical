@@ -127,7 +127,7 @@ export const getPagesCount = async (
   bodyData.append("paramsCount", "3");
   bodyData.append("param0", degreeId.toString());
   bodyData.append("param1", collegeId.toString());
-  bodyData.append("param3", departmentId.toString());
+  bodyData.append("param2", departmentId.toString());
 
   const res = await fetch(API_URL, {
     headers: DEFAULT_HEADERS,
