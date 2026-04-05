@@ -1,8 +1,8 @@
 import {
-  getAllDepartments,
-  getAllDepartmentsByCollegeId,
-  syncDepartments,
-} from "@/lib/Scraping/scrape_service";
+  getDepartments,
+  getDepartmentsByCollege,
+} from "@/lib/db/repositories/department_repository";
+import { syncDepartments } from "@/lib/Scraping/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -11,7 +11,7 @@ export const GET = async (req: NextRequest) => {
 
     const collegeId = searchParams.get("college");
     if (!collegeId) {
-      const data = await getAllDepartments();
+      const data = await getDepartments();
       return NextResponse.json(
         {
           message: "Departments fetched successfully",
@@ -20,7 +20,7 @@ export const GET = async (req: NextRequest) => {
         { status: 200 },
       );
     } else {
-      const data = await getAllDepartmentsByCollegeId(parseInt(collegeId, 10));
+      const data = await getDepartmentsByCollege(parseInt(collegeId, 10));
       return NextResponse.json(
         {
           message: "Departments fetched successfully",

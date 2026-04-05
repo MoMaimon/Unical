@@ -21,42 +21,30 @@ const DEFAULT_HEADERS = {
  * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp)
  * by simulating an RMI (Remote Method Invocation) POST request.
  * * @template T - The expected shape of the objects within the returned array. Defaults to Object.
- * @param {string} method - The specific header method value or endpoint identifier to call.
- * @param {number} paramCount - The exact number of parameters being passed. Must match the length of the `params` array.
- * @param {Array<number>} [params=[]] - Array of numerical parameters required by the requested method.
+ * @param {string} rmiMethod - The specific header method value or endpoint identifier to call.
+ * @param {Array<number>} [rmiArgs=[]] - Array of numerical parameters required by the requested method.
  * @throws {ParamsInvalid} Throws if the length of the `params` array does not exactly match `paramCount`.
  * @throws {ParamsCountInvalid} Throws if `paramCount` is a negative number.
  * @returns {Promise<Array<T>>} A promise that resolves to an array of objects of type T.
  */
 export const fetchData = async <T = Object>(
-  method: string,
-  paramCount: number,
-  params: Array<number> = [],
+  rmiMethod: string,
+  rmiArgs: Array<number> = [],
 ): Promise<Array<T>> => {
-  if (params.length != paramCount) {
-    throw new ParamsInvalid();
-  }
-
-  if (paramCount < 0) {
-    throw new ParamsCountInvalid();
-  }
-
   const bodyData = new URLSearchParams();
 
-  bodyData.append("method", method);
-  bodyData.append("paramsCount", paramCount.toString());
+  bodyData.append("method", rmiMethod);
+  bodyData.append("paramsCount", rmiArgs.length.toString());
 
-  if (paramCount > 0) {
-    params.forEach((param, index) => {
-      bodyData.append(`param${index}`, param.toString());
-    });
-  }
+  rmiArgs.forEach((param, index) => {
+    bodyData.append(`param${index}`, param.toString());
+  });
+
   const res = await fetch(API_URL, {
     headers: DEFAULT_HEADERS,
     body: bodyData,
     method: "POST",
   });
-
   return formatJsonData(await res.text()) as Array<T>;
 };
 
@@ -72,7 +60,6 @@ const formatJsonData = (data: string): Object => {
   return JSON.parse(jsonData);
 };
 
-
 /**
  * Fetches data from the external API and synchronizes it with the MongoDB database using Mongoose bulk operations.
  * This function decouples the fetch logic from the database schema by allowing the caller to define the mapping strategy.
@@ -81,17 +68,16 @@ const formatJsonData = (data: string): Object => {
  * @param {FetchParams} config - Configuration object for the fetch request and database model.
  * @param {string} config.method - The RMI method name to invoke on the external API.
  * @param {Model<any>} config.model - The Mongoose model where the data should be saved.
- * @param {number} [config.paramCount=0] - The expected number of parameters for the API call. Defaults to 0.
  * @param {number[]} [config.paramList=[]] - An array of numerical parameters to send with the API request.
  * @param {(item: T) => any} buildUpsertDoc - A callback function that transforms a fetched item into a Mongoose bulk write operation object (e.g., `updateOne` with `upsert: true`).
  * @returns {Promise<void>} Resolves when the synchronization and database bulk write are complete.
  */
 
 export const fetchAndSave = async <T>(
-  { method, model, paramCount = 0, paramList = [] }: FetchParams,
+  { rmiMethod, model, paramList = [] }: FetchParams,
   buildUpsertDoc: (item: T) => any,
 ) => {
-  const data = await fetchData<T>(method, paramCount, paramList);
+  const data = await fetchData<T>(rmiMethod, paramList);
   await connect();
 
   const bulk = data.map(buildUpsertDoc);
@@ -104,7 +90,6 @@ export const fetchAndSave = async <T>(
     console.log("No data fetched from API.");
   }
 };
-
 
 /**
  * Queries the external API to determine the total number of pagination pages available

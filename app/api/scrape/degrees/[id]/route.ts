@@ -1,4 +1,4 @@
-import { getDegree } from "@/lib/Scraping/scrape_service";
+import { getDegree } from "@/lib/db/repositories/degree_repository";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (

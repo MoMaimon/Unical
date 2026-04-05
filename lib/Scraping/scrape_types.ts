@@ -1,43 +1,19 @@
 import { Model } from "mongoose";
 
-interface BaseSchema {
-  _id: number;
-  __v: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
-export interface DegreeSchema extends BaseSchema {
-  name: string;
-}
-
-
-export interface CollegeSchema extends BaseSchema {
-  name: string;
-}
-
-
-export interface DepartmentSchema extends BaseSchema{
-  name: string;
-  college: number;
-};
-
-export interface CourseSchema extends BaseSchema {
-  name: string;
-  degree: number;
-  college: number;
-  department: number;
-  hours: number;
-}
-
-
+/* -------------------------------------------------------------------------- */
+/*                         Scraper Orchestration Types                        */
+/* -------------------------------------------------------------------------- */
 
 export interface FetchParams {
-  method: string;
+  rmiMethod: string;
   model: Model<any>;
-  paramCount?: number;
   paramList?: Array<number>;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                             API Response Types                             */
+/* -------------------------------------------------------------------------- */
 
 export interface DegreeApiResponse {
   id: string;
@@ -63,4 +39,14 @@ export interface CourseApiResponse {
   no: string;
   name: string;
   hours: string;
+}
+
+export interface SectionApiResponse {
+  name: string;
+  no: string;
+  status: string;
+  rooms: string;
+  times: string;
+  lecturers: string;
+  sectionNo: string;
 }

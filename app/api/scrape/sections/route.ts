@@ -1,5 +1,9 @@
-import { getCoursesPage } from "@/lib/db/repositories/course_repository";
-import { syncCourses } from "@/lib/Scraping/scrape_service";
+import {
+  getCollegeFilter,
+  getDepartmentFilter,
+  getSectionsPage,
+} from "@/lib/db/repositories/section_repository";
+import { syncSections } from "@/lib/Scraping/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
@@ -13,31 +17,39 @@ export const GET = async (req: NextRequest) => {
 
     const collegeId = searchParams.get("college");
     if (collegeId) {
-      filter.college = Number(collegeId);
+      const coursesIds = await getCollegeFilter(Number(collegeId));
+      filter.courseNo = { $in: coursesIds };
     }
 
     const departmentId = searchParams.get("department");
     if (departmentId) {
-      filter.department = Number(departmentId);
+      const coursesIds = await getDepartmentFilter(Number(departmentId));
+      filter.courseNo = { $in: coursesIds };
+      console.log(filter);
     }
 
-    const courses = await getCoursesPage({ page, limit, filter });
+    const courseId = searchParams.get("course");
+    if (courseId) {
+      filter.courseNo = courseId;
+    }
+
+    const sections = await getSectionsPage({ page, limit, filter });
 
     return NextResponse.json(
       {
-        message: "Courses fetched successfully",
-        data: courses,
+        message: "Sections fetched successfully",
+        data: sections,
         meta: {
           page,
           limit,
-          returnedCount: courses.length,
+          returnedCount: sections.length,
         },
       },
       { status: 200 },
     );
   } catch (error: any) {
     return NextResponse.json(
-      { error: "Failed to fetch courses", details: error.message },
+      { error: "Failed to fetch sections", details: error.message },
       { status: 500 },
     );
   }
@@ -60,10 +72,10 @@ export const POST = async (req: NextRequest) => {
         { status: 400 },
       );
     }
-    await syncCourses(Number(collegeId));
+    await syncSections(Number(collegeId));
     return NextResponse.json(
       {
-        message: "Courses synced successfully.",
+        message: "Sections synced successfully.",
       },
       { status: 200 },
     );

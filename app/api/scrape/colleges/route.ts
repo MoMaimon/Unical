@@ -1,9 +1,10 @@
-import { getAllColleges, syncColleges } from "@/lib/Scraping/scrape_service";
+import { getColleges } from "@/lib/db/repositories/college_repository";
+import { syncColleges } from "@/lib/Scraping/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {
   try {
-    const data = await getAllColleges();
+    const data = await getColleges();
 
     return NextResponse.json(
       {
