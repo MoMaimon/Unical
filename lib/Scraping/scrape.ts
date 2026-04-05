@@ -80,7 +80,8 @@ export const fetchAndSave = async <T>(
   const data = await fetchData<T>(rmiMethod, paramList);
   await connect();
 
-  const bulk = data.map(buildUpsertDoc);
+  const bulk = data.map(buildUpsertDoc).filter(Boolean);
+
   if (bulk.length > 0) {
     const result = await model.bulkWrite(bulk);
     console.log(
