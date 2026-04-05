@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import connect from "../db";
 import { SectionSchema } from "../db_types";
 import Course from "../models/courses";
@@ -9,8 +10,11 @@ import { getByPage, PaginationParams } from "./util/repo_util";
  * @param {string} id - The ID of the section.
  * @returns {Promise<SectionSchema | null>} The section object, or null if not found.
  */
-export const getSection = async (id: string): Promise<SectionSchema | null> => {
+export const getSection = async (
+  id: mongoose.Types.ObjectId,
+): Promise<SectionSchema | null> => {
   await connect();
+
   const section = await Section.findById(id).lean<SectionSchema>();
   return section;
 };

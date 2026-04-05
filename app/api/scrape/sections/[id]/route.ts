@@ -1,4 +1,5 @@
 import { getSection } from "@/lib/db/repositories/section_repository";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
@@ -8,7 +9,13 @@ export const GET = async (
   try {
     const { id } = await params;
 
-    const course = await getSection(id);
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { message: "Section not found" },
+        { status: 404 },
+      );
+    }
+    const course = await getSection(new mongoose.Types.ObjectId(id));
 
     if (!course) {
       return NextResponse.json(
