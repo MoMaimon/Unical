@@ -15,6 +15,7 @@ import {
   DepartmentApiResponse,
   DepartmentSchema,
   SectionApiResponse,
+  SectionSchema,
 } from "./scrape_types";
 import Section from "../db/models/sections";
 
@@ -374,6 +375,17 @@ export const getCourse = async (id: string): Promise<CourseSchema | null> => {
 };
 
 /**
+ * Retrieves a single section by its ID.
+ * @param {string} id - The ID of the section.
+ * @returns {Promise<SectionSchema | null>} The section object, or null if not found.
+ */
+export const getSection = async (id: string): Promise<SectionSchema | null> => {
+  await connect();
+  const section = await Section.findById(id).lean<SectionSchema>();
+  return section;
+};
+
+/**
  * Retrieves all degrees stored in the database.
  * * @returns {Promise<DegreeSchema[]>} An array of all degrees.
  */
@@ -449,7 +461,50 @@ export const getAllCoursesByDepartmentId = async (
   return courses;
 };
 
-interface GetCoursesParams {
+export const getAllSectionsByCollegeId = async (
+  collegeId: number,
+): Promise<SectionSchema[]> => {
+  await connect();
+
+  const courses = await Course.find({ college: collegeId })
+    .select("_id")
+    .lean();
+
+  const coursesIds = courses.map((course) => course._id);
+  const sections = await Section.find({ courseNo: { $in: collegeId } }).lean<
+    SectionSchema[]
+  >();
+  return sections;
+};
+
+export const getAllSectionsByDepartmentId = async (
+  departmentId: number,
+): Promise<SectionSchema[]> => {
+  await connect();
+
+  const courses = await Course.find({ department: departmentId })
+    .select("_id")
+    .lean();
+
+  const coursesIds = courses.map((course) => course._id);
+  const sections = await Section.find({ courseNo: { $in: departmentId } }).lean<
+    SectionSchema[]
+  >();
+  return sections;
+};
+
+export const getAllSectionsByCourseId = async (
+  courseId: number,
+): Promise<SectionSchema[]> => {
+  await connect();
+
+  const sections = await Section.find({ courseNo: courseId }).lean<
+    SectionSchema[]
+  >();
+  return sections;
+};
+
+interface PaginationParams {
   page: number;
   limit?: number;
   filter?: Record<string, any>;
@@ -459,14 +514,14 @@ interface GetCoursesParams {
  * Retrieves a paginated list of courses from the database.
  * Useful for displaying large directories of courses without overloading the frontend.
  *
- * @param {GetCoursesParams} params - The pagination and filtering configuration.
+ * @param {PaginationParams} params - The pagination and filtering configuration.
  * @returns {Promise<CourseSchema[]>} An array of courses for the requested page.
  */
 export const getCoursesPage = async ({
   page,
   limit = 20,
   filter = {},
-}: GetCoursesParams) => {
+}: PaginationParams) => {
   await connect();
   const skipIndex = (page - 1) * limit;
 
@@ -476,4 +531,20 @@ export const getCoursesPage = async ({
     .lean<CourseSchema[]>();
 
   return courses;
+};
+
+export const getSectionPage = async ({
+  page,
+  limit = 20,
+  filter = {},
+}: PaginationParams) => {
+  await connect();
+  const skipIndex = (page - 1) * limit;
+
+  const sections = await Section.find(filter)
+    .skip(skipIndex)
+    .limit(limit)
+    .lean<SectionSchema[]>();
+
+  return sections;
 };
