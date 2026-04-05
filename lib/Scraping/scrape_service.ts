@@ -110,15 +110,22 @@ export const syncDegrees = async () => {
  * @returns {Promise<void>}
  */
 export const syncColleges = async () => {
+  const blackList = [14, 12];
   await fetchAndSave<CollegeApiResponse>(
     { rmiMethod: "getColleges", model: College },
-    (college) => ({
-      updateOne: {
-        filter: { _id: college.id },
-        update: { $set: { name: college.name } },
-        upsert: true,
-      },
-    }),
+    (college) => {
+      if (blackList.includes(Number(college.id))) {
+        console.log(`Skipping blacklisted college: ${college.name}`);
+        return null;
+      }
+      return {
+        updateOne: {
+          filter: { _id: college.id },
+          update: { $set: { name: college.name } },
+          upsert: true,
+        },
+      };
+    },
   );
 };
 
