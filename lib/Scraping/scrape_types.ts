@@ -36,7 +36,7 @@ export interface SectionSchema {
   lecturers: string;
   courseNo: string;
   sectionNo: number;
-  
+
   schedules: Array<{
     days: number;
     startTime: string;
@@ -56,9 +56,8 @@ export interface SectionSchema {
 }
 
 export interface FetchParams {
-  method: string;
+  rmiMethod: string;
   model: Model<any>;
-  paramCount?: number;
   paramList?: Array<number>;
 }
 
