@@ -7,15 +7,10 @@ import { fetchAndSave, getPagesCount } from "@/lib/Scraping/scrape";
 import Course from "@/lib/db/models/courses";
 import {
   CollegeApiResponse,
-  CollegeSchema,
   CourseApiResponse,
-  CourseSchema,
   DegreeApiResponse,
-  DegreeSchema,
   DepartmentApiResponse,
-  DepartmentSchema,
   SectionApiResponse,
-  SectionSchema,
 } from "./scrape_types";
 import Section from "../db/models/sections";
 import { prepareSectionData } from "./scrape_mappers";
@@ -46,9 +41,7 @@ const getDegreeIds = async (): Promise<Array<number>> => {
  * @param {number} collegeId - The ID of the college to filter departments by.
  * @returns {Promise<Array<number>>} A promise that resolves to an array of department IDs.
  */
-const getDepartmentIds = async (
-  collegeId: number,
-): Promise<Array<number>> => {
+const getDepartmentIds = async (collegeId: number): Promise<Array<number>> => {
   await connect();
   return await Department.distinct("_id", { college: collegeId });
 };

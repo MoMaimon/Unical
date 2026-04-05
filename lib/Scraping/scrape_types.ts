@@ -1,65 +1,19 @@
 import { Model } from "mongoose";
 
-interface BaseSchema {
-  _id: number;
-  __v: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
-export interface DegreeSchema extends BaseSchema {
-  name: string;
-}
-
-export interface CollegeSchema extends BaseSchema {
-  name: string;
-}
-
-export interface DepartmentSchema extends BaseSchema {
-  name: string;
-  college: number;
-}
-
-export interface CourseSchema extends BaseSchema {
-  name: string;
-  degree: number;
-  college: number;
-  department: number;
-  hours: number;
-}
-
-export interface SectionSchema {
-  _id: string;
-  __v: number;
-  name: string;
-  status: number;
-  lecturers: string;
-  courseNo: string;
-  sectionNo: number;
-
-  schedules: Array<{
-    days: number;
-    startTime: string;
-    endTime: string;
-    startMinutes: number;
-    endMinutes: number;
-    room: string;
-    isOnline: boolean;
-  }>;
-
-  isFullyOnline: boolean;
-  isPartiallyOnline: boolean;
-  onlineDays: number;
-
-  createdAt: Date;
-  updatedAt: Date;
-}
+/* -------------------------------------------------------------------------- */
+/*                         Scraper Orchestration Types                        */
+/* -------------------------------------------------------------------------- */
 
 export interface FetchParams {
   rmiMethod: string;
   model: Model<any>;
   paramList?: Array<number>;
 }
+
+/* -------------------------------------------------------------------------- */
+/*                             API Response Types                             */
+/* -------------------------------------------------------------------------- */
 
 export interface DegreeApiResponse {
   id: string;

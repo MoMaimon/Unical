@@ -4,7 +4,7 @@ import {
   DegreeSchema,
   DepartmentSchema,
   SectionSchema,
-} from "@/lib/Scraping/scrape_types";
+} from "@/lib/db/db_types";
 import Degree from "../models/degrees";
 import connect from "../db";
 import College from "../models/colleges";
