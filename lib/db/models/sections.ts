@@ -23,13 +23,11 @@ const sectionsSchema = new Schema(
 
     schedules: [SchedulePartSchema],
     officialRoom: { type: String, default: "" },
-    isFullyOnline: { type: Boolean, default: false }, 
-
+    isFullyOnline: { type: Boolean, default: false },
 
     communityRoom: { type: String, default: null },
-    communityIsOnline: { type: Boolean, default: null },
+    communityIsOnline: { type: Boolean, default: false },
     confirmationsCount: { type: Number, default: 0 },
-
   },
   {
     timestamps: true,

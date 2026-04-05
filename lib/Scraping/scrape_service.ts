@@ -18,7 +18,14 @@ import {
 } from "./scrape_types";
 import Section from "../db/models/sections";
 
-const KNOWN_ONLINE_COURSES = [""];
+const KNOWN_ONLINE_COURSES = [
+  "35004101",
+  "35004102",
+  "35003101",
+  "35003102",
+  "35005100",
+  "35005101",
+];
 const dayMap: Record<string, number> = {
   ح: 0,
   ن: 1,
@@ -88,7 +95,7 @@ const parseScheduleData = (timesStr: string, roomsStr: string) => {
     const timePart = timeParts[i] || "";
     const roomPart = roomParts[i] || "";
 
-    if (!timePart) return;
+    if (!timePart) continue;
 
     const tokens = timePart.split(" ").filter(Boolean);
     const days: number[] = [];
@@ -143,7 +150,7 @@ export const prepareSectionData = (section: any) => {
     isFullyOnline: isKnownOnline,
 
     // communityRoom: null,
-    // communityIsOnline: false,
+    communityIsOnline: false,
     // confirmationsCount: 0,
   };
 };
