@@ -14,8 +14,22 @@ import {
   DegreeSchema,
   DepartmentApiResponse,
   DepartmentSchema,
+  SectionApiResponse,
 } from "./scrape_types";
+import Section from "../db/models/sections";
 
+const KNOWN_ONLINE_COURSES = [""];
+const dayMap: Record<string, number> = {
+  ح: 0,
+  ن: 1,
+  ث: 2,
+  ر: 3,
+  خ: 4,
+};
+
+/* -------------------------------------------------------------------------- */
+/*                               Helper Methods                               */
+/* -------------------------------------------------------------------------- */
 /**
  * Retrieves an array of all College IDs currently stored in the database.
  * @returns {Promise<Array<number>>} A promise that resolves to an array of college IDs.
@@ -44,6 +58,94 @@ const getDepartmentsIds = async (
 ): Promise<Array<number>> => {
   await connect();
   return await Department.distinct("_id", { college: college_id });
+};
+
+const cleanLecturer = (lecturer: string): string => {
+  if (!lecturer) return "";
+  const names = lecturer
+    .split(/<br\s*\/?>+/i)
+    .map((name) => name.trim())
+    .filter(Boolean);
+  return Array.from(new Set(names)).join("، ");
+};
+
+const timeToMinutes = (timeStr: string): number => {
+  const [hours, minutes] = timeStr.split(":").map(Number);
+  return hours * 60 + minutes;
+};
+
+const parseScheduleData = (timesStr: string, roomsStr: string) => {
+  const timeParts = timesStr
+    ? timesStr.split(/<br\s*\/?>+/i).map((s) => s.trim())
+    : [];
+  const roomParts = roomsStr
+    ? roomsStr.split(/<br\s*\/?>+/i).map((s) => s.trim())
+    : [];
+
+  const schedules = [];
+
+  for (let i = 0; i < timeParts.length; i++) {
+    const timePart = timeParts[i] || "";
+    const roomPart = roomParts[i] || "";
+
+    if (!timePart) return;
+
+    const tokens = timePart.split(" ").filter(Boolean);
+    const days: number[] = [];
+    let startTime = "";
+    let endTime = "";
+
+    tokens.forEach((token) => {
+      if (dayMap[token] !== undefined) {
+        days.push(dayMap[token]);
+      } else if (token.includes(":")) {
+        if (!startTime) startTime = token;
+        else endTime = token;
+      }
+    });
+
+    const isOnline = roomPart.toLowerCase() === "null";
+
+    schedules.push({
+      days,
+      startTime,
+      endTime,
+      startMinutes: startTime ? timeToMinutes(startTime) : null,
+      endMinutes: endTime ? timeToMinutes(endTime) : null,
+      room: isOnline ? "Online" : roomPart,
+      isOnline,
+    });
+  }
+
+  return schedules;
+};
+
+export const prepareSectionData = (section: any) => {
+  const schedules = parseScheduleData(section.times, section.rooms);
+
+  const officialRoomRaw = section.rooms
+    ? section.rooms.split(/<br\s*\/?>+/i)[0].trim()
+    : "";
+  const officialRoom =
+    officialRoomRaw.toLowerCase() === "null" ? "" : officialRoomRaw;
+
+  const isKnownOnline = KNOWN_ONLINE_COURSES.includes(section.no);
+
+  return {
+    name: section.name,
+    status: Number(section.status),
+    sectionNo: Number(section.sectionNo),
+    courseNo: section.no,
+    lecturers: cleanLecturer(section.lecturers),
+
+    schedules: schedules,
+    officialRoom: officialRoom,
+    isFullyOnline: isKnownOnline,
+
+    // communityRoom: null,
+    // communityIsOnline: false,
+    // confirmationsCount: 0,
+  };
 };
 
 /* -------------------------------------------------------------------------- */
@@ -152,6 +254,54 @@ export const syncCourses = async (college: number) => {
                       college: college,
                       hours: course.hours,
                     },
+                  },
+                  upsert: true,
+                },
+              }),
+            );
+            await delay(300); // 300ms delay between pages
+          }
+        }),
+      );
+    }
+  }
+  await Promise.all(tasks);
+};
+
+export const syncSections = async (college: number) => {
+  const degrees = await getDegreesIds();
+  const departments = await getDepartmentsIds(college);
+
+  const limit = pLimit(2);
+  const tasks = [];
+
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  for (const degree of degrees) {
+    for (const department of departments) {
+      tasks.push(
+        limit(async () => {
+          const pagesCount = await getPagesCount(degree, college, department);
+
+          if (!pagesCount || pagesCount < 1) return;
+
+          for (let i = 1; i <= pagesCount; i++) {
+            await fetchAndSave<SectionApiResponse>(
+              {
+                method: "getCourses",
+                model: Section,
+                paramCount: 4,
+                paramList: [degree, college, department, i],
+              },
+              (section) => ({
+                updateOne: {
+                  filter: {
+                    courseNo: section.no,
+                    sectionNo: section.sectionNo,
+                  },
+                  update: {
+                    $set: prepareSectionData(section),
                   },
                   upsert: true,
                 },
