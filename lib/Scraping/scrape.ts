@@ -1,4 +1,3 @@
-import { Model } from "mongoose";
 import connect from "../db/db";
 import { FetchParams } from "./scrape_types";
 
@@ -18,13 +17,10 @@ const DEFAULT_HEADERS = {
 };
 
 /**
- * Fetches data from the BAU courses API (https://app2.bau.edu.jo:7799/courses/index.jsp)
- * by simulating an RMI (Remote Method Invocation) POST request.
- * * @template T - The expected shape of the objects within the returned array. Defaults to Object.
+ * Fetches data from the BAU courses API by simulating an RMI (Remote Method Invocation) POST request.
+ * @template T - The expected shape of the objects within the returned array. Defaults to Object.
  * @param {string} rmiMethod - The specific header method value or endpoint identifier to call.
  * @param {Array<number>} [rmiArgs=[]] - Array of numerical parameters required by the requested method.
- * @throws {ParamsInvalid} Throws if the length of the `params` array does not exactly match `paramCount`.
- * @throws {ParamsCountInvalid} Throws if `paramCount` is a negative number.
  * @returns {Promise<Array<T>>} A promise that resolves to an array of objects of type T.
  */
 export const fetchData = async <T = Object>(
@@ -45,6 +41,10 @@ export const fetchData = async <T = Object>(
     body: bodyData,
     method: "POST",
   });
+
+  if (!res.ok) {
+    throw new Error(`BAU API responded with status: ${res.status}`);
+  }
   return formatJsonData(await res.text()) as Array<T>;
 };
 
@@ -53,7 +53,7 @@ export const fetchData = async <T = Object>(
  * with double quotes to ensure valid JSON syntax before parsing.
  *
  * @param {string} data - The raw string response from the API.
- * @returns {Object} The parsed JavaScript object/array.
+ * @returns {Object} The parsed JavaScript object or array.
  */
 const formatJsonData = (data: string): Object => {
   const jsonData = data.replace(/'/g, '"');
@@ -61,18 +61,14 @@ const formatJsonData = (data: string): Object => {
 };
 
 /**
- * Fetches data from the external API and synchronizes it with the MongoDB database using Mongoose bulk operations.
+ * Fetches data from the external API and synchronizes it with the MongoDB database using bulk operations.
  * This function decouples the fetch logic from the database schema by allowing the caller to define the mapping strategy.
  *
  * @template T - The expected shape of the data objects returned by the API.
  * @param {FetchParams} config - Configuration object for the fetch request and database model.
- * @param {string} config.method - The RMI method name to invoke on the external API.
- * @param {Model<any>} config.model - The Mongoose model where the data should be saved.
- * @param {number[]} [config.paramList=[]] - An array of numerical parameters to send with the API request.
- * @param {(item: T) => any} buildUpsertDoc - A callback function that transforms a fetched item into a Mongoose bulk write operation object (e.g., `updateOne` with `upsert: true`).
+ * @param {(item: T) => any} buildUpsertDoc - A callback function that transforms a fetched item into a Mongoose bulk write operation object.
  * @returns {Promise<void>} Resolves when the synchronization and database bulk write are complete.
  */
-
 export const fetchAndSave = async <T>(
   { rmiMethod, model, paramList = [] }: FetchParams,
   buildUpsertDoc: (item: T) => any,
@@ -101,7 +97,6 @@ export const fetchAndSave = async <T>(
  * @param {number} departmentId - The unique identifier for the department.
  * @returns {Promise<number>} A promise that resolves to the total number of pages.
  */
-
 export const getPagesCount = async (
   degreeId: number,
   collegeId: number,

@@ -18,6 +18,7 @@ import { prepareSectionData } from "./scrape_mappers";
 /* -------------------------------------------------------------------------- */
 /*                               Helper Methods                               */
 /* -------------------------------------------------------------------------- */
+
 /**
  * Retrieves an array of all College IDs currently stored in the database.
  * @returns {Promise<Array<number>>} A promise that resolves to an array of college IDs.
@@ -28,8 +29,9 @@ const getCollegeIds = async (): Promise<Array<number>> => {
 };
 
 /**
- * Retrieves an array of all Degree IDs currently stored in the database.
- * @returns {Promise<Array<number>>} A promise that resolves to an array of degree IDs.
+ * Retrieves an array of Department IDs associated with a specific college.
+ * @param {number} collegeId - The ID of the college to filter departments by.
+ * @returns {Promise<Array<number>>} A promise that resolves to an array of department IDs.
  */
 const getDegreeIds = async (): Promise<Array<number>> => {
   await connect();
@@ -46,6 +48,17 @@ const getDepartmentIds = async (collegeId: number): Promise<Array<number>> => {
   return await Department.distinct("_id", { college: collegeId });
 };
 
+/**
+ * Orchestrates the fetching and saving of paginated data (like courses or sections) across
+ * all combinations of degrees and departments for a specific college. Utilizes concurrency
+ * limits and delays to avoid rate-limiting from the target API.
+ * @template T - The expected shape of the API response data.
+ * @param {number} college - The ID of the college to sync data for.
+ * @param {string} methodName - The RMI method to call (e.g., "getCourses").
+ * @param {any} model - The Mongoose model to save the data into.
+ * @param {(item: T) => any} buildUpsertDoc - A callback to transform the raw API item into a Mongoose bulk write operation.
+ * @returns {Promise<void>} Resolves when all pages for all departments and degrees have been synced.
+ */
 const syncPaginatedData = async <T>(
   college: number,
   methodName: string,
@@ -106,7 +119,8 @@ export const syncDegrees = async () => {
 };
 
 /**
- * Fetches all colleges from the external API and upserts them into the database.
+ * Fetches all colleges from the external API and upserts them into the database,
+ * skipping any blacklisted college IDs.
  * @returns {Promise<void>}
  */
 export const syncColleges = async () => {
@@ -156,8 +170,7 @@ export const syncDepartments = async () => {
 
 /**
  * Fetches and synchronizes all courses for a specific college from the external API.
- * Uses `p-limit` to restrict concurrent requests and implements a 300ms delay
- * between page fetches to prevent rate-limiting or timeout errors.
+ * Uses pagination and concurrent request limits to prevent rate-limiting errors.
  * @param {number} college - The ID of the college to sync courses for.
  * @returns {Promise<void>}
  */
@@ -182,6 +195,12 @@ export const syncCourses = async (college: number) => {
   );
 };
 
+/**
+ * Fetches and synchronizes all sections for a specific college from the external API.
+ * It parses complex schedule and lecturer strings into structured database formats.
+ * @param {number} college - The ID of the college to sync sections for.
+ * @returns {Promise<void>}
+ */
 export const syncSections = async (college: number) => {
   await syncPaginatedData<SectionApiResponse>(
     college,
