@@ -1,6 +1,5 @@
 import { Model } from "mongoose";
 
-
 /* -------------------------------------------------------------------------- */
 /*                         Scraper Orchestration Types                        */
 /* -------------------------------------------------------------------------- */
@@ -16,11 +15,6 @@ export interface FetchParams {
 /* -------------------------------------------------------------------------- */
 
 export interface DegreeApiResponse {
-  id: string;
-  name: string;
-}
-
-export interface CollegeApiResponse {
   id: string;
   name: string;
 }

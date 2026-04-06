@@ -1,4 +1,3 @@
-import { Model } from "mongoose";
 import connect from "../db/db";
 import { FetchParams } from "./scrape_types";
 
@@ -23,8 +22,6 @@ const DEFAULT_HEADERS = {
  * * @template T - The expected shape of the objects within the returned array. Defaults to Object.
  * @param {string} rmiMethod - The specific header method value or endpoint identifier to call.
  * @param {Array<number>} [rmiArgs=[]] - Array of numerical parameters required by the requested method.
- * @throws {ParamsInvalid} Throws if the length of the `params` array does not exactly match `paramCount`.
- * @throws {ParamsCountInvalid} Throws if `paramCount` is a negative number.
  * @returns {Promise<Array<T>>} A promise that resolves to an array of objects of type T.
  */
 export const fetchData = async <T = Object>(
@@ -45,6 +42,10 @@ export const fetchData = async <T = Object>(
     body: bodyData,
     method: "POST",
   });
+
+  if (!res.ok) {
+    throw new Error(`BAU API responded with status: ${res.status}`);
+  }
   return formatJsonData(await res.text()) as Array<T>;
 };
 
