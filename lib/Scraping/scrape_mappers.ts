@@ -14,6 +14,12 @@ const dayMap: Record<string, number> = {
   خ: 4,
 };
 
+/**
+ * Cleans and formats the raw lecturer string from the API by splitting on HTML
+ * break tags, trimming whitespace, and removing duplicate names.
+ * @param {string} lecturer - The raw lecturer HTML.
+ * @returns {string} A comma-separated string of unique lecturer names.
+ */
 const cleanLecturer = (lecturer: string): string => {
   if (!lecturer) return "";
   const names = lecturer
@@ -23,11 +29,23 @@ const cleanLecturer = (lecturer: string): string => {
   return Array.from(new Set(names)).join("، ");
 };
 
+/**
+ * Converts a 24-hour time string (HH:MM) into total minutes since midnight.
+ * @param {string} timeStr - The time string in "HH:MM" format.
+ * @returns {number} The total number of minutes.
+ */
 const timeToMinutes = (timeStr: string): number => {
   const [hours, minutes] = timeStr.split(":").map(Number);
   return hours * 60 + minutes;
 };
 
+/**
+ * Parses raw HTML string data containing times and rooms into an array of structured
+ * schedule objects. It aligns matching indices of time slots and room assignments.
+ * @param {string} timesStr - The raw HTML string containing days and times.
+ * @param {string} roomsStr - The raw HTML string containing room assignments.
+ * @returns {Array<Object>} An array of objects representing structured schedules (days, times, room, etc.).
+ */
 const parseScheduleData = (timesStr: string, roomsStr: string) => {
   const timeParts = timesStr
     ? timesStr.split(/<br\s*\/?>+/i).map((s) => s.trim())
@@ -74,6 +92,12 @@ const parseScheduleData = (timesStr: string, roomsStr: string) => {
   return schedules;
 };
 
+/**
+ * Transforms a raw section API response object into a formatted data object
+ * ready for insertion into the MongoDB `Section` collection.
+ * @param {any} section - The raw section data from the external API.
+ * @returns {Object} The mapped and cleaned section data.
+ */
 export const prepareSectionData = (section: any) => {
   const schedules = parseScheduleData(section.times, section.rooms);
 
