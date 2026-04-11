@@ -19,5 +19,4 @@ export class Schedule {
   deleteSection(section: Section) {
     this.#courses.delete(section.course);
   }
-  
 }
