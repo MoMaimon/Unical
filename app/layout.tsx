@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { SearchBar } from "@/components/ui/SearchBar";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -26,10 +22,40 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable)}>
+    <html lang="en" className="dark h-full" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={cn(
+          "h-screen bg-background font-sans antialiased overflow-hidden",
+          inter.variable,
+        )}
       >
+        <nav className="flex justify-between items-center p-6">
+          <div className="text-3xl font-bold">
+            <Link href="/">
+              <span className="text-primary">Uni</span>cal
+            </Link>
+          </div>
+
+          <SearchBar className="md:max-w-xs lg:max-w-lg 2xl:max-w-2xl" />
+
+          <div>
+            <Button variant={"ghost"} asChild>
+              <Link href="/courses" className="text-xl">
+                Courses
+              </Link>
+            </Button>
+            <Button variant={"ghost"} asChild>
+              <Link href="/departments" className="text-xl">
+                Departments
+              </Link>
+            </Button>
+            <Button variant={"ghost"} asChild>
+              <Link href="/colleges" className="text-xl">
+                Colleges
+              </Link>
+            </Button>
+          </div>
+        </nav>
         {children}
       </body>
     </html>
