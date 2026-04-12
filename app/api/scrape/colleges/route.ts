@@ -1,5 +1,6 @@
-import { getColleges } from "@/lib/db/repositories/college_repository";
-import { syncColleges } from "@/lib/Scraping/scrape_service";
+
+import { getColleges } from "@/features/scraping/server/db/repository/college_repository";
+import { syncColleges } from "@/features/scraping/server/services/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

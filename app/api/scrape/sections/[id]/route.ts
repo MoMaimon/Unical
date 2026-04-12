@@ -1,4 +1,4 @@
-import { getSection } from "@/lib/db/repositories/section_repository";
+import { getSection } from "@/features/scraping/server/db/repository/section_repository";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 

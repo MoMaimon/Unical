@@ -1,9 +1,6 @@
-import {
-  getCollegeFilter,
-  getDepartmentFilter,
-  getSectionsPage,
-} from "@/lib/db/repositories/section_repository";
-import { syncSections } from "@/lib/Scraping/scrape_service";
+
+import { getCollegeFilter, getDepartmentFilter, getSectionsPage } from "@/features/scraping/server/db/repository/section_repository";
+import { syncSections } from "@/features/scraping/server/services/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

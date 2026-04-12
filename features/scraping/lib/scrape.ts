@@ -1,5 +1,5 @@
-import connect from "../db/db";
-import { FetchParams } from "./scrape_types";
+import connect from "../server/db/db";
+import { FetchParams } from "../types/scrape_types";
 
 const API_URL = "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod";
 const DEFAULT_HEADERS = {
