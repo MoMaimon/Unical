@@ -6,6 +6,19 @@ import { logger } from "../utils/logger";
 export class BauApiClient {
   constructor(private baseConfig = config) {}
 
+  private getRandomUserAgent(): string {
+    const agents = this.baseConfig.userAgents;
+    const randomIndex = Math.floor(Math.random() * agents.length);
+    return agents[randomIndex];
+  }
+
+  private getHeaders() {
+    return {
+      ...this.baseConfig.baseHeaders,
+      "User-Agent": this.getRandomUserAgent(),
+    };
+  }
+
   private async requestRaw(method: string, params: number[]): Promise<string> {
     const body = new URLSearchParams();
     body.append("method", method);
@@ -21,7 +34,7 @@ export class BauApiClient {
     try {
       const res = await fetch(this.baseConfig.api.url, {
         method: "POST",
-        headers: this.baseConfig.headers,
+        headers: this.getHeaders(),
         body,
         signal: controller.signal,
       });
@@ -42,6 +55,7 @@ export class BauApiClient {
     const raw = await withRetry(() => this.requestRaw(method, params), {
       retries: this.baseConfig.api.retries,
       delayMs: this.baseConfig.api.retryDelayMs,
+      backoffFactor: 2,
     });
     const fixed = this.fixMalformedJson(raw);
     try {

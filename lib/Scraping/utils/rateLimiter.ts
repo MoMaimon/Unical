@@ -1,6 +1,15 @@
 // utils/rateLimiter.ts
 import pLimit from "p-limit";
 
+/**
+ * Returns a random delay between baseDelayMs and baseDelayMs * 2
+ * (adds jitter to avoid detection)
+ */
+function getRandomDelay(baseDelayMs: number): number {
+  const jitter = Math.random() * baseDelayMs; // 0 to baseDelayMs
+  return baseDelayMs + jitter;
+}
+
 export class RateLimiter {
   private limit: ReturnType<typeof pLimit>;
 
@@ -18,7 +27,8 @@ export class RateLimiter {
       const wrapped = this.limit(async () => {
         const res = await task();
         if (this.delayBetweenTasksMs > 0 && i < tasks.length - 1) {
-          await new Promise((r) => setTimeout(r, this.delayBetweenTasksMs));
+          const delayWithJitter = getRandomDelay(this.delayBetweenTasksMs);
+          await new Promise((r) => setTimeout(r, delayWithJitter));
         }
         return res;
       });
