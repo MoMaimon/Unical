@@ -1,6 +1,6 @@
 import connect from "../db";
 import { CourseSchema } from "../db_types";
-import Course from "../models/courses";
+import Course from "../../../features/scraping/server/db/schema/courses";
 import { getByPage, PaginationParams } from "./util/repo_util";
 
 /**

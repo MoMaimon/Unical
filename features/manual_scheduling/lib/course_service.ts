@@ -1,4 +1,4 @@
-import { SectionSchema } from "../db/db_types";
+import { SectionSchema } from "../../scraping/types/db_types";
 import { Course } from "./classes/course";
 import { Section } from "./classes/section";
 import { SectionTime } from "./classes/section_time";

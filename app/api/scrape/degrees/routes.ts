@@ -1,5 +1,5 @@
-import { getDegrees } from "@/lib/db/repositories/degree_repository";
-import { syncDegrees } from "@/lib/Scraping/scrape_service";
+import { getDegrees } from "@/features/scraping/server/db/repository/degree_repository";
+import { syncDegrees } from "@/features/scraping/server/services/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

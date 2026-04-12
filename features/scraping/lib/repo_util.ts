@@ -1,5 +1,5 @@
 import { Model } from "mongoose";
-import connect from "../../db";
+import connect from "../server/db/db";
 
 export interface PaginationParams {
   page: number;

@@ -7,7 +7,7 @@ const connect = async () => {
   if (!MONGODB_URI) {
     throw new Error(
       "MONGODB_URI environment variable is not defined. " +
-        "Please define it in your .env.local or environment configuration."
+        "Please define it in your .env.local or environment configuration.",
     );
   }
 
@@ -29,7 +29,7 @@ const connect = async () => {
     console.log("Connected");
   } catch (error: Error | any) {
     console.log("Error connecting db | " + error);
-    throw new DBException(error.message); // TODO improve the error handling
+    throw new Error(error.message); // TODO improve the error handling
   }
 };
 

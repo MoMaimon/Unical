@@ -1,8 +1,5 @@
-import {
-  getDepartments,
-  getDepartmentsByCollege,
-} from "@/lib/db/repositories/department_repository";
-import { syncDepartments } from "@/lib/Scraping/scrape_service";
+import { getDepartments, getDepartmentsByCollege } from "@/features/scraping/server/db/repository/department_repository";
+import { syncDepartments } from "@/features/scraping/server/services/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (req: NextRequest) => {

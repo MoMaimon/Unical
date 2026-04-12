@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import connect from "../db";
-import { SectionSchema } from "../db_types";
-import Course from "../models/courses";
-import Section from "../models/sections";
-import { getByPage, PaginationParams } from "./util/repo_util";
+
+import Course from "../schema/courses";
+import Section from "../schema/sections";
+import { SectionSchema } from "@/features/scraping/types/db_types";
+import { getByPage, PaginationParams } from "@/features/scraping/lib/repo_util";
 
 /**
  * Retrieves a single section by its ID.
