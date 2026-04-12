@@ -1,10 +1,5 @@
-// utils/rateLimiter.ts
 import pLimit from "p-limit";
 
-/**
- * Returns a random delay between baseDelayMs and baseDelayMs * 2
- * (adds jitter to avoid detection)
- */
 function getRandomDelay(baseDelayMs: number): number {
   const jitter = Math.random() * baseDelayMs; // 0 to baseDelayMs
   return baseDelayMs + jitter;

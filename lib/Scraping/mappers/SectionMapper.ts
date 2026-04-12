@@ -1,4 +1,3 @@
-// mappers/SectionMapper.ts
 import { SectionApiResponse } from "../scrape_types";
 import { parseScheduleData } from "../utils/timeHelpers";
 import { config } from "../config";

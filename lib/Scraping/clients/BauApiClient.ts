@@ -1,4 +1,3 @@
-// clients/BauApiClient.ts
 import { config } from "../config";
 import { withRetry } from "../utils/retry";
 import { logger } from "../utils/logger";

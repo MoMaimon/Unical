@@ -1,4 +1,3 @@
-// index.ts
 export { BauApiClient } from "./clients/BauApiClient";
 export { BauScrapingService } from "./services/BauScrapingService";
 export { SyncOrchestrator } from "./services/SyncOrchestrator";

@@ -1,4 +1,3 @@
-// utils/timeHelpers.ts
 export const dayMap: Record<string, number> = {
   ح: 0,
   ن: 1,

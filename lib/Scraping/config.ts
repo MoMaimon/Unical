@@ -1,4 +1,3 @@
-// config.ts
 export const config = {
   api: {
     url: process.env.BAU_API_URL || "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod",
@@ -19,7 +18,6 @@ export const config = {
       "35005101",
     ] as string[],
   },
-  // User agent pool for rotation
   userAgents: [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0",
@@ -27,7 +25,6 @@ export const config = {
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0",
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
   ],
-  // Base headers (without User-Agent – will be added per request)
   baseHeaders: {
     accept: "*/*",
     "accept-language": "en-US,en;q=0.9,ar;q=0.8",

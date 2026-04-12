@@ -1,4 +1,3 @@
-// services/BauScrapingService.ts
 import { BauApiClient } from "../clients/BauApiClient";
 import {
   DegreeApiResponse,
