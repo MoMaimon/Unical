@@ -1,4 +1,4 @@
-import { CollegeSchema } from "@/features/scraping/types/db_types";
+import { CollegeSchema } from "@/types/db_types";
 import College from "../schema/colleges";
 import connect from "../db";
 

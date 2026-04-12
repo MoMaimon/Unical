@@ -1,6 +1,6 @@
+import { DepartmentSchema } from "@/types/db_types";
 import connect from "../db";
-import { DepartmentSchema } from "../db_types";
-import Department from "../../../features/scraping/server/db/schema/departments";
+import Department from "../schema/departments";
 
 /**
  * Retrieves a single department by its ID.

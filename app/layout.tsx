@@ -22,41 +22,43 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark h-full" suppressHydrationWarning>
+    <html lang="ar" dir="rtl" className="dark h-full" suppressHydrationWarning>
       <body
         className={cn(
-          "h-screen bg-background font-sans antialiased overflow-hidden",
+          "h-screen bg-background font-sans antialiased",
           inter.variable,
         )}
       >
-        <nav className="flex justify-between items-center p-6">
-          <div className="text-3xl font-bold">
-            <Link href="/">
-              <span className="text-primary">Uni</span>cal
-            </Link>
-          </div>
-
-          <SearchBar className="md:max-w-xs lg:max-w-lg 2xl:max-w-2xl" />
-
-          <div>
-            <Button variant={"ghost"} asChild>
-              <Link href="/courses" className="text-xl">
-                Courses
+        <div className="flex flex-col">
+          <nav className="flex justify-between items-center p-6">
+            <div className="text-3xl font-bold">
+              <Link href="/">
+                <span className="text-primary">Uni</span>cal
               </Link>
-            </Button>
-            <Button variant={"ghost"} asChild>
-              <Link href="/departments" className="text-xl">
-                Departments
-              </Link>
-            </Button>
-            <Button variant={"ghost"} asChild>
-              <Link href="/colleges" className="text-xl">
-                Colleges
-              </Link>
-            </Button>
-          </div>
-        </nav>
-        {children}
+            </div>
+          
+            <SearchBar className="md:max-w-xs lg:max-w-lg 2xl:max-w-2xl" />
+          
+            <div>
+              <Button variant={"ghost"} asChild>
+                <Link href="/courses" className="text-xl">
+                  Courses
+                </Link>
+              </Button>
+              <Button variant={"ghost"} asChild>
+                <Link href="/departments" className="text-xl">
+                  Departments
+                </Link>
+              </Button>
+              <Button variant={"ghost"} asChild>
+                <Link href="/colleges" className="text-xl">
+                  Colleges
+                </Link>
+              </Button>
+            </div>
+          </nav>
+          {children}
+        </div>
       </body>
     </html>
   );

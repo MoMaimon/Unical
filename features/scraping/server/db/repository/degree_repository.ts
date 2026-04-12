@@ -1,6 +1,6 @@
+import { DegreeSchema } from "@/types/db_types";
 import connect from "../db";
-import { DegreeSchema } from "../db_types";
-import Degree from "../../../features/scraping/server/db/schema/degrees";
+import Degree from "../schema/degrees";
 
 /**
  * Retrieves a single degree by its ID.

@@ -5,15 +5,10 @@ import Degree from "@/features/scraping/server/db/schema/degrees";
 import Department from "@/features/scraping/server/db/schema/departments";
 import { fetchAndSave, getPagesCount } from "@/features/scraping/lib/scrape";
 import Course from "@/features/scraping/server/db/schema/courses";
-import {
-  CollegeApiResponse,
-  CourseApiResponse,
-  DegreeApiResponse,
-  DepartmentApiResponse,
-  SectionApiResponse,
-} from "../../features/scraping/types/scrape_types";
-import Section from "../../features/scraping/server/db/schema/sections";
-import { prepareSectionData } from "./scrape_mappers";
+import { Section } from "lucide-react";
+import { prepareSectionData } from "../../lib/scrape_mappers";
+import { DegreeApiResponse, CollegeApiResponse, DepartmentApiResponse, CourseApiResponse, SectionApiResponse } from "../../types/scrape_types";
+
 
 /* -------------------------------------------------------------------------- */
 /*                               Helper Methods                               */

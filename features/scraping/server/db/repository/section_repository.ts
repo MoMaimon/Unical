@@ -3,7 +3,7 @@ import connect from "../db";
 
 import Course from "../schema/courses";
 import Section from "../schema/sections";
-import { SectionSchema } from "@/features/scraping/types/db_types";
+import { SectionSchema } from "@/types/db_types";
 import { getByPage, PaginationParams } from "@/features/scraping/lib/repo_util";
 
 /**
