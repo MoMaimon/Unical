@@ -1,0 +1,40 @@
+export const config = {
+  api: {
+    url: process.env.BAU_API_URL || "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod",
+    timeoutMs: 15000,
+    retries: 3,
+    retryDelayMs: 1000,
+  },
+  scraping: {
+    defaultDelayMs: 300,
+    maxConcurrentPages: 2,
+    collegeBlacklist: [14, 12] as number[],
+    knownOnlineCourses: [
+      "35004101",
+      "35004102",
+      "35003101",
+      "35003102",
+      "35005100",
+      "35005101",
+    ] as string[],
+  },
+  userAgents: [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36 Edg/121.0.0.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+  ],
+  baseHeaders: {
+    accept: "*/*",
+    "accept-language": "en-US,en;q=0.9,ar;q=0.8",
+    "content-type": "application/x-www-form-urlencoded",
+    "sec-ch-ua": '"Chromium";v="146", "Not-A.Brand";v="24", "Google Chrome";v="146"',
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": '"Windows"',
+    "sec-fetch-dest": "empty",
+    "sec-fetch-mode": "cors",
+    "sec-fetch-site": "same-origin",
+    Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
+  },
+} as const;
