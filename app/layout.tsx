@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cairo, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import NavBar from "@/components/nav-bar";
 
-const inter = Inter({
-  subsets: ["latin"],
+const cairo = Cairo({
+  subsets: ["arabic"],
   variable: "--font-sans",
 });
 
@@ -23,6 +23,7 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const direction = locale === "ar" ? "rtl" : "ltr";
+
   return (
     <html
       lang={locale}
@@ -33,13 +34,15 @@ export default async function RootLayout({
       <body
         className={cn(
           "h-screen bg-background font-sans antialiased",
-          inter.variable,
+          cairo.variable,
         )}
       >
-        <div className="flex flex-col">
+        {/* <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(circle,#73737350_1px,transparent_1px)] bg-size-[25px_25px]"></div> */}
+        <div className="absolute -z-10 inset-0 h-full w-full bg-[linear-gradient(to_right,#73737320_1px,transparent_1px),linear-gradient(to_bottom,#73737320_1px,transparent_1px)] bg-size-[50px_50px]" />
+        <div className="flex flex-col h-screen">
           <NextIntlClientProvider>
-            <NavBar></NavBar>
-            {children}
+            <NavBar />
+            <main className="flex flex-col flex-1 pt-24">{children}</main>
           </NextIntlClientProvider>
         </div>
       </body>
