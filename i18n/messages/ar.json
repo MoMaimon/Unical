@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "heroTitle": "إبحث عن المواد.",
+    "heroDescription":"ابن جدولك."
+  },
+  "NavBar":{
+    "degrees":"الشهادات",
+    "colleges":"الكليات",
+    "departments":"الأقسام",
+    "search":"البحث"
+  }
+}

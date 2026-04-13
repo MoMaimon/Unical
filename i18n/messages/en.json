@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "heroTitle": "Find your courses.",
+    "heroDescription":"Build your schedule."
+  },
+  "NavBar":{
+    "degrees":"Degrees",
+    "colleges":"Colleges",
+    "departments":"Departments",
+    "search":"Search"
+  }
+}
