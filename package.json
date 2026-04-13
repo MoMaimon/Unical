@@ -15,6 +15,7 @@
     "mongodb": "^7.1.1",
     "mongoose": "^9.3.3",
     "next": "^16.2.1",
+    "next-intl": "^4.9.1",
     "p-limit": "^7.3.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.3",
