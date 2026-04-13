@@ -1,7 +1,8 @@
-import { SectionSchema } from "../db/db_types";
-import { Course } from "./classes/course";
-import { Section } from "./classes/section";
-import { SectionTime } from "./classes/section_time";
+import { SectionSchema } from "../../../types/db_types";
+import { Course } from "../schema/course";
+import { Section } from "../schema/section";
+import { SectionTime } from "../schema/section_time";
+
 
 export class CourseService {
   #courses: Course[];

@@ -1,6 +1,6 @@
+import { CollegeSchema } from "@/types/db_types";
+import College from "../schema/colleges";
 import connect from "../db";
-import { CollegeSchema } from "../db_types";
-import College from "../models/colleges";
 
 /**
  * Retrieves a single department by its ID.
@@ -12,7 +12,6 @@ export const getCollege = async (id: number): Promise<CollegeSchema | null> => {
   const college = await College.findById(id).lean<CollegeSchema>();
   return college;
 };
-
 
 /**
  * Retrieves all colleges stored in the database.

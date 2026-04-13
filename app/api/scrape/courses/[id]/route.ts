@@ -1,4 +1,5 @@
-import { getCourse } from "@/lib/db/repositories/course_repository";
+
+import { getCourse } from "@/features/scraping/server/db/repository/course_repository";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (

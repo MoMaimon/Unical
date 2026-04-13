@@ -1,7 +1,7 @@
+import { PaginationParams, getByPage } from "@/features/scraping/lib/repo_util";
+import { CourseSchema } from "@/types/db_types";
 import connect from "../db";
-import { CourseSchema } from "../db_types";
-import Course from "../models/courses";
-import { getByPage, PaginationParams } from "./util/repo_util";
+import Course from "../schema/courses";
 
 /**
  * Retrieves a single course by its ID.
