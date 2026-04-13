@@ -1,19 +1,14 @@
 import pLimit from "p-limit";
-import connect from "@/lib/db/db";
-import College from "@/lib/db/models/colleges";
-import Degree from "@/lib/db/models/degrees";
-import Department from "@/lib/db/models/departments";
-import { fetchAndSave, getPagesCount } from "@/lib/Scraping/scrape";
-import Course from "@/lib/db/models/courses";
-import {
-  CollegeApiResponse,
-  CourseApiResponse,
-  DegreeApiResponse,
-  DepartmentApiResponse,
-  SectionApiResponse,
-} from "./scrape_types";
-import Section from "../db/models/sections";
-import { prepareSectionData } from "./scrape_mappers";
+import connect from "@/features/scraping/server/db/db";
+import College from "@/features/scraping/server/db/schema/colleges";
+import Degree from "@/features/scraping/server/db/schema/degrees";
+import Department from "@/features/scraping/server/db/schema/departments";
+import { fetchAndSave, getPagesCount } from "@/features/scraping/lib/scrape";
+import Course from "@/features/scraping/server/db/schema/courses";
+import { Section } from "lucide-react";
+import { prepareSectionData } from "../../lib/scrape_mappers";
+import { DegreeApiResponse, CollegeApiResponse, DepartmentApiResponse, CourseApiResponse, SectionApiResponse } from "../../types/scrape_types";
+
 
 /* -------------------------------------------------------------------------- */
 /*                               Helper Methods                               */
