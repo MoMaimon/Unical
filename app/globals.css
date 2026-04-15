@@ -128,3 +128,17 @@
     @apply font-sans;
   }
 }
+
+/* 1. Hide scrollbar in WebKit browsers (Chrome, Safari, Edge) */
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* 2. Hide scrollbar in Firefox and older IE/Edge */
+* {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}

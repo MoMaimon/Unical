@@ -24,8 +24,8 @@ export default async function NavBar() {
         <div className="flex items-center gap-4">
           <LanguageSwitcher currentLocale={locale}></LanguageSwitcher>
           <Button variant={"ghost"} asChild>
-            <Link href="/departments" className="text-xl">
-              {t("departments")}
+            <Link href="/courses" className="text-xl">
+              Courses
             </Link>
           </Button>
           <Button variant={"ghost"} asChild>
