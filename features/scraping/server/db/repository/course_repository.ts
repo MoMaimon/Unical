@@ -1,7 +1,11 @@
-import { PaginationParams, getByPage } from "@/features/scraping/lib/repo_util";
-import { CourseSchema } from "@/types/db_types";
+import { PaginationParams } from "@/features/scraping/lib/repo_util";
+import { CourseSchema, CourseSchemaPopulated } from "@/types/db_types";
 import connect from "../db";
 import Course from "../schema/courses";
+
+import "../schema/degrees";
+import "../schema/colleges";
+import "../schema/departments";
 
 /**
  * Retrieves a single course by its ID.
@@ -35,18 +39,23 @@ export const getCoursesByCollege = async (
  * Useful for displaying large directories of courses without overloading the frontend.
  *
  * @param {PaginationParams} params - The pagination and filtering configuration.
- * @returns {Promise<CourseSchema[]>} An array of courses for the requested page.
+ * @returns {Promise<CourseSchemaPopulated[]>} An array of courses for the requested page.
  */
 export const getCoursesPage = async ({
   page,
   limit = 20,
   filter = {},
 }: PaginationParams) => {
-  const courses = getByPage(Course, {
-    page: page,
-    limit: limit,
-    filter: filter,
-  });
+  await connect();
+  const skipIndex = (page - 1) * limit;
+
+  const courses = await Course.find(filter)
+    .populate("degree")
+    .populate("college")
+    .populate("department")
+    .skip(skipIndex)
+    .limit(limit)
+    .lean<CourseSchemaPopulated[]>();
 
   return courses;
 };

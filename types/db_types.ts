@@ -31,6 +31,15 @@ export interface CourseSchema extends Omit<BaseSchema, "_id"> {
   hours: number;
 }
 
+export interface CourseSchemaPopulated extends Omit<
+  CourseSchema,
+  "degree" | "college" | "department"
+> {
+  degree: DegreeSchema;
+  college: CollegeSchema;
+  department: DepartmentSchema;
+}
+
 export interface SectionSchema extends Omit<BaseSchema, "_id"> {
   _id: string;
   name: string;
