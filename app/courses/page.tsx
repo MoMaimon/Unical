@@ -1,9 +1,7 @@
+"use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  ButtonGroup,
-  ButtonGroupText,
-} from "@/components/ui/button-group";
+import { ButtonGroup, ButtonGroupText } from "@/components/ui/button-group";
 import {
   Card,
   CardContent,
@@ -18,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getCoursesPage } from "@/features/scraping/server/db/repository/course_repository";
+import { useMemo, useState } from "react";
 
 const MOCK_COURSES = [
   // Information Technology - Computer Science
@@ -195,50 +193,115 @@ const MOCK_COURSES = [
     hours: 3,
   },
 ];
-export default async function Courses() {
-  const courses = MOCK_COURSES;
+export default function Courses() {
+  const [sortBy, setSortBy] = useState<null | "name" | "hours">();
+  const [groupBy, setGroupBy] = useState<
+    "none" | "degree" | "college" | "department"
+  >("none");
+
+  const displayData = useMemo(() => {
+    let processed = [...MOCK_COURSES];
+    if (sortBy === "name") {
+      processed.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === "hours") {
+      processed.sort((a, b) => b.hours - a.hours);
+    }
+
+    if (groupBy === "none") {
+      return { "All Courses": processed };
+    }
+
+    return processed.reduce(
+      (acc, course) => {
+        const groupName = course[groupBy].name;
+        if (!acc[groupName]) {
+          acc[groupName] = [];
+        }
+        acc[groupName].push(course);
+        return acc;
+      },
+      {} as Record<string, typeof MOCK_COURSES>,
+    );
+  }, [sortBy, groupBy]);
+
   return (
     <div>
       <div className="flex gap-5">
         <ButtonGroup>
           <ButtonGroupText>Sort</ButtonGroupText>
-          <Button variant={"outline"}>Name</Button>
-          <Button variant={"outline"}>Hours</Button>
+          <Button
+            variant={sortBy === "name" ? "default" : "outline"}
+            onClick={() => setSortBy(sortBy === "name" ? null : "name")}
+          >
+            Name
+          </Button>
+          <Button
+            variant={sortBy === "hours" ? "default" : "outline"}
+            onClick={() => setSortBy(sortBy === "hours" ? null : "hours")}
+          >
+            Hours
+          </Button>
         </ButtonGroup>
+
         <ButtonGroup>
           <ButtonGroupText>Group By</ButtonGroupText>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant={"outline"}>None</Button>
+              <Button variant={"outline"} className="capitalize">
+                {groupBy}
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Degree</DropdownMenuItem>
-              <DropdownMenuItem>College</DropdownMenuItem>
-              <DropdownMenuItem>Department</DropdownMenuItem>
-              <DropdownMenuItem variant="destructive">None</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy("degree")}>
+                Degree
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy("college")}>
+                {" "}
+                College
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy("department")}>
+                Department
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setGroupBy("none")}
+                variant="destructive"
+              >
+                None
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </ButtonGroup>
       </div>
-      <div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(max(350px,30%),1fr))] py-5">
-        {courses.map((course) => (
-          <Card key={course._id} className="">
-            <CardHeader>
-              <CardTitle>{course.name}</CardTitle>
-              <CardDescription>{course.department.name}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul>
-                <li>{course.degree.name}</li>
-                <li>{course.college.name}</li>
-              </ul>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Badge variant={"outline"}>{course.hours} Credit Hours</Badge>
-              <Button>View Sections</Button>
-            </CardFooter>
-          </Card>
+      <div className="py-5 space-y-8">
+        {Object.entries(displayData).map(([groupName, courses]) => (
+          <div key={groupName} className="space-y-4">
+            {/* Only show the group header if we are actually grouping */}
+            {groupBy !== "none" && (
+              <h2 className="text-2xl font-bold border-b pb-2">{groupName}</h2>
+            )}
+
+            <div className="grid gap-5 grid-cols-[repeat(auto-fit,max(350px,30%))]">
+              {courses.map((course) => (
+                <Card key={course._id}>
+                  <CardHeader>
+                    <CardTitle>{course.name}</CardTitle>
+                    <CardDescription>{course.department.name}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="text-sm text-muted-foreground">
+                      <li>{course.degree.name}</li>
+                      <li>{course.college.name}</li>
+                    </ul>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <Badge variant="outline">{course.hours} Credit Hours</Badge>
+                    <Button>View Sections</Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
