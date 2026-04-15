@@ -2,25 +2,37 @@
 import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
+import { useRouter, useSearchParams } from "next/navigation";
 
-interface ChildProps {
-  sortBy: "name" | "hours" | null;
-  setSortBy: Dispatch<SetStateAction<"name" | "hours" | null>>;
-}
-export default function Sort({ sortBy, setSortBy }: ChildProps) {
+export default function Sort() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentSort = searchParams.get("sort");
+
+  const handleSort = (sortVal: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (sortVal) {
+      params.set("sort", sortVal);
+    } else {
+      params.delete("sort");
+    }
+    router.push(`?${params.toString()}`);
+  };
   return (
     <ButtonGroup>
       <ButtonGroupText>Sort</ButtonGroupText>
       <Button
-        variant={sortBy === "name" ? "default" : "outline"}
-        onClick={() => setSortBy(sortBy === "name" ? null : "name")}
+        variant={currentSort === "name" ? "default" : "outline"}
+        onClick={() => handleSort(currentSort === "name" ? null : "name")}
         className="border-0"
       >
         Name
       </Button>
       <Button
-        variant={sortBy === "hours" ? "default" : "outline"}
-        onClick={() => setSortBy(sortBy === "hours" ? null : "hours")}
+        variant={currentSort === "hours" ? "default" : "outline"}
+        onClick={() => handleSort(currentSort === "hours" ? null : "hours")}
         className="border-0"
       >
         Hours

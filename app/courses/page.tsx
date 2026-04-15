@@ -1,4 +1,3 @@
-"use client";
 import Filter from "@/components/search_components/filter";
 import Group from "@/components/search_components/group";
 import Sort from "@/components/search_components/sort";
@@ -12,66 +11,73 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CourseSchema } from "@/types/db_types";
+import { getColleges } from "@/features/scraping/server/db/repository/college_repository";
+import { getCoursesPage } from "@/features/scraping/server/db/repository/course_repository";
 
-import { useEffect, useMemo, useState } from "react";
+export default async function Courses({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | undefined }>;
+}) {
+  const params = await searchParams;
 
+  const filterCollegeName = params.college;
+  const sortBy = params.sort;
+  const groupBy = params.group || "none";
 
+  const colleges = await getColleges();
 
-export default function Courses() {
-  const [filterCollege, setFilterCollege] = useState<string>("All");
-  const [sortBy, setSortBy] = useState<null | "name" | "hours">(null);
-  const [groupBy, setGroupBy] = useState<
-    "none" | "degree" | "college" | "department"
-  >("none");
+  const dbFilter: Record<string, any> = {};
 
-  const [courses, setCourses] = useState<CourseSchema[]>([]);
+  if (filterCollegeName) {
+    const targetCollege = colleges.find((c) => c.name === filterCollegeName);
 
-  useEffect(() => {
-    fetch(`api/scrape/courses`)
-      .then((res) => res.json())
-      .then((json) => {
-        setCourses(json.data);
-      })
-      .catch((error) => console.error("Error:", error));
-  }, [filterCollege]);
-
-  const displayData = useMemo(() => {
-    let processed = [...courses];
-    if (sortBy === "name") {
-      processed.sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sortBy === "hours") {
-      processed.sort((a, b) => b.hours - a.hours);
+    if (targetCollege) {
+      dbFilter.college = targetCollege._id;
     }
+  }
+  const dbParams = {
+    page: 1,
+    limit: 20,
+    filter: dbFilter,
+  };
+  const courses = await getCoursesPage(dbParams);
 
-    if (groupBy === "none") {
-      return { "All Courses": processed };
-    }
+  let processed = [...courses];
 
-    return processed.reduce(
+  if (sortBy === "name") {
+    processed.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortBy === "hours") {
+    processed.sort((a, b) => b.hours - a.hours);
+  }
+
+  // C. Group
+  let displayData: Record<string, typeof courses> = {};
+
+  if (groupBy === "none") {
+    displayData = { "All Courses": processed };
+  } else {
+    displayData = processed.reduce(
       (acc, course) => {
-        const groupName = course[groupBy];
-        if (!acc[groupName]) {
-          acc[groupName] = [];
-        }
+        // @ts-ignore
+        const groupName = course[groupBy].name || "Other";
+
+        if (!acc[groupName]) acc[groupName] = [];
         acc[groupName].push(course);
         return acc;
       },
       {} as Record<string, typeof courses>,
     );
-  }, [sortBy, groupBy]);
+  }
 
   return (
     <div>
       <div className="flex justify-between">
         <div className="flex gap-5">
-          <Sort sortBy={sortBy} setSortBy={setSortBy}></Sort>
-          <Group groupBy={groupBy} setGroupBy={setGroupBy}></Group>
+          <Sort />
+          <Group />
         </div>
-        <Filter
-          filterCollege={filterCollege}
-          setFilterCollege={setFilterCollege}
-        ></Filter>
+        <Filter colleges={colleges}></Filter>
       </div>
       <div className="py-5 space-y-8">
         {Object.entries(displayData).map(([groupName, courses]) => (
@@ -85,12 +91,12 @@ export default function Courses() {
                 <Card key={course._id}>
                   <CardHeader>
                     <CardTitle>{course.name}</CardTitle>
-                    <CardDescription>{course.department}</CardDescription>
+                    <CardDescription>{course.department.name}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="text-sm text-muted-foreground">
-                      <li>{course.degree}</li>
-                      <li>{course.college}</li>
+                      <li>{course.degree.name}</li>
+                      <li>{course.college.name}</li>
                     </ul>
                   </CardContent>
                   <CardFooter className="flex justify-between">

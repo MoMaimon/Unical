@@ -1,5 +1,4 @@
 "use client";
-import { Dispatch, SetStateAction } from "react";
 import { Button } from "../ui/button";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
 import {
@@ -8,15 +7,25 @@ import {
   DropdownMenuItem,
   DropdownMenu,
 } from "../ui/dropdown-menu";
+import { useRouter, useSearchParams } from "next/navigation";
 
-interface ChildProps {
-  groupBy: "none" | "degree" | "college" | "department";
-  setGroupBy: Dispatch<
-    SetStateAction<"none" | "degree" | "college" | "department">
-  >;
-}
+export default function () {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-export default function ({ groupBy, setGroupBy }: ChildProps) {
+  const currentGroup = searchParams.get("group") || "none";
+
+  const handleGroup = (groupVal: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (groupVal && groupVal !== "none") {
+      params.set("group", groupVal);
+    } else {
+      params.delete("group");
+    }
+
+    router.push(`?${params.toString()}`);
+  };
   return (
     <ButtonGroup>
       <ButtonGroupText>Group By</ButtonGroupText>
@@ -24,25 +33,25 @@ export default function ({ groupBy, setGroupBy }: ChildProps) {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={groupBy !== "none" ? "default" : "outline"}
+            variant={currentGroup !== "none" ? "default" : "outline"}
             className="capitalize border-0"
           >
-            {groupBy}
+            {currentGroup}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setGroupBy("degree")}>
+          <DropdownMenuItem onClick={() => handleGroup("degree")}>
             Degree
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setGroupBy("college")}>
+          <DropdownMenuItem onClick={() => handleGroup("college")}>
             {" "}
             College
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setGroupBy("department")}>
+          <DropdownMenuItem onClick={() => handleGroup("department")}>
             Department
           </DropdownMenuItem>
           <DropdownMenuItem
-            onClick={() => setGroupBy("none")}
+            onClick={() => handleGroup("none")}
             variant="destructive"
           >
             None

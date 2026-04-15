@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import NavBar from "@/components/nav-bar";
+import { DirectionProvider } from "@/components/ui/direction";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -27,7 +28,6 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      dir={direction}
       className="dark h-full"
       suppressHydrationWarning
     >
@@ -42,7 +42,9 @@ export default async function RootLayout({
         <div className="flex flex-col h-screen">
           <NextIntlClientProvider>
             <NavBar />
-            <main className="flex flex-col flex-1 p-24">{children}</main>
+            <DirectionProvider dir={direction}>
+              <main dir={direction} className="flex flex-col flex-1 p-24">{children}</main>
+            </DirectionProvider>
           </NextIntlClientProvider>
         </div>
       </body>
