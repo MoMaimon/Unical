@@ -59,3 +59,14 @@ export const getCoursesPage = async ({
 
   return courses;
 };
+
+export const getTotalPages = async ({
+  page,
+  limit = 20,
+  filter = {},
+}: PaginationParams) => {
+  await connect();
+  const totalCourses = await Course.countDocuments(filter);
+  const totalPages = Math.ceil(totalCourses / limit);
+  return totalPages;
+};

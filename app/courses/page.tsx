@@ -1,5 +1,6 @@
 import Filter from "@/components/search_components/filter";
 import Group from "@/components/search_components/group";
+import Pages from "@/components/search_components/pagination";
 import Sort from "@/components/search_components/sort";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getColleges } from "@/features/scraping/server/db/repository/college_repository";
-import { getCoursesPage } from "@/features/scraping/server/db/repository/course_repository";
+import {
+  getCoursesPage,
+  getTotalPages,
+} from "@/features/scraping/server/db/repository/course_repository";
 
 export default async function Courses({
   searchParams,
@@ -24,6 +28,7 @@ export default async function Courses({
   const filterCollegeName = params.college;
   const sortBy = params.sort;
   const groupBy = params.group || "none";
+  const page = params.page || 1;
 
   const colleges = await getColleges();
 
@@ -36,12 +41,14 @@ export default async function Courses({
       dbFilter.college = targetCollege._id;
     }
   }
+
   const dbParams = {
-    page: 1,
+    page: Number(page),
     limit: 20,
     filter: dbFilter,
   };
   const courses = await getCoursesPage(dbParams);
+  const totalPages = await getTotalPages(dbParams);
 
   let processed = [...courses];
 
@@ -73,12 +80,13 @@ export default async function Courses({
   return (
     <div>
       <div className="flex justify-between">
+        <Filter colleges={colleges}></Filter>
         <div className="flex gap-5">
           <Sort />
           <Group />
         </div>
-        <Filter colleges={colleges}></Filter>
       </div>
+      <Pages totalPages={totalPages} />
       <div className="py-5 space-y-8">
         {Object.entries(displayData).map(([groupName, courses]) => (
           <div key={groupName} className="space-y-4">
@@ -109,6 +117,7 @@ export default async function Courses({
           </div>
         ))}
       </div>
+      <Pages totalPages={totalPages} />
     </div>
   );
 }

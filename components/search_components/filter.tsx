@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { CollegeSchema } from "@/types/db_types";
 import { Button } from "../ui/button";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
@@ -22,6 +22,7 @@ export default function Filter({ colleges }: FilterProps) {
 
   const handleSelect = (collegeName: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
+    params.set("page", "1");
 
     if (collegeName) {
       params.set("college", collegeName);
