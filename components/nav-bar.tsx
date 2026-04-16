@@ -25,7 +25,7 @@ export default async function NavBar() {
           <LanguageSwitcher currentLocale={locale}></LanguageSwitcher>
           <Button variant={"ghost"} asChild>
             <Link href="/courses" className="text-xl">
-              Courses
+              {t("courses")}
             </Link>
           </Button>
           <Button variant={"ghost"} asChild>

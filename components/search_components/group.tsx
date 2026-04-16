@@ -1,4 +1,5 @@
 "use client";
+import { useTranslations } from "next-intl";
 import { Button } from "../ui/button";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
 import {
@@ -26,9 +27,10 @@ export default function () {
 
     router.push(`?${params.toString()}`);
   };
+  const t = useTranslations("Courses.GroupBy");
   return (
     <ButtonGroup>
-      <ButtonGroupText>Group By</ButtonGroupText>
+      <ButtonGroupText>{t("group_by")}</ButtonGroupText>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -36,25 +38,24 @@ export default function () {
             variant={currentGroup !== "none" ? "default" : "outline"}
             className="capitalize border-0"
           >
-            {currentGroup}
+            {t(currentGroup)}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuItem onClick={() => handleGroup("degree")}>
-            Degree
+            {t("degree")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleGroup("college")}>
-            {" "}
-            College
+            {t("college")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => handleGroup("department")}>
-            Department
+            {t("department")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => handleGroup("none")}
             variant="destructive"
           >
-            None
+            {t("none")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

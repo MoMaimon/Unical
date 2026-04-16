@@ -9,6 +9,7 @@ import { FieldSet, FieldGroup, Field, FieldLabel } from "../ui/field";
 import { Checkbox } from "../ui/checkbox";
 import { CollegeSchema } from "@/types/db_types";
 import { Dispatch, SetStateAction } from "react";
+import { useTranslations } from "next-intl";
 
 interface AccordionFilterProp {
   filterName: string;
@@ -40,6 +41,7 @@ export default function AccordionFilter({
       setCollegesFilter(new Set());
     }
   };
+  const t = useTranslations("Courses.Filter");
   return (
     <Accordion type="multiple">
       <AccordionItem value="college" className="border-b-0">
@@ -60,7 +62,7 @@ export default function AccordionFilter({
                   htmlFor="select-all-checkbox"
                   className="font-normal"
                 >
-                  Select All
+                  {t("select_all")}
                 </FieldLabel>
               </Field>
               {colleges.map((c) => (

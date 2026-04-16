@@ -8,6 +8,7 @@ import {
   DegreeSchema,
   DepartmentSchema,
 } from "@/types/db_types";
+import { useTranslations } from "next-intl";
 
 interface ActiveFiltersProps {
   colleges: CollegeSchema[];
@@ -27,6 +28,9 @@ export default function ActiveFilters({
 }: ActiveFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  const t = useTranslations("Courses.Filter");
+
   const filterParam = searchParams.get("filter");
 
   if (!filterParam) return null;
@@ -90,11 +94,11 @@ export default function ActiveFilters({
       return departments.find((d) => `${d._id}` === id)?.name || id;
     return id;
   };
-
+   
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
       <span className="text-sm font-medium text-muted-foreground mr-2">
-        Active Filters:
+        {t("active_filters")}:
       </span>
 
       {activeBadges.map(({ key, val }, index) => (
@@ -106,7 +110,7 @@ export default function ActiveFilters({
           // 2. Moved the onClick here so the whole badge is clickable
           onClick={() => removeFilter(key, val)}
         >
-          {key}:{" "}
+          {t(key)}:{" "}
           <span className="font-semibold">{getDisplayName(key, val)}</span>
           <X
             // 3. Removed onClick from the X, and updated text color to react to the group hover
@@ -120,7 +124,7 @@ export default function ActiveFilters({
         className="px-3 py-1 text-sm cursor-pointer hover:bg-destructive/10 hover:text-destructive rounded-full"
         onClick={clearAll}
       >
-        Clear All
+        {t("clear_all")}
       </Badge>
     </div>
   );

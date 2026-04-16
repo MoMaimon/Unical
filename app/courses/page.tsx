@@ -20,6 +20,7 @@ import {
 } from "@/features/scraping/server/db/repository/course_repository";
 import { getDegrees } from "@/features/scraping/server/db/repository/degree_repository";
 import { getDepartments } from "@/features/scraping/server/db/repository/department_repository";
+import { getTranslations } from "next-intl/server";
 
 export default async function Courses({
   searchParams,
@@ -44,8 +45,6 @@ export default async function Courses({
   } else {
     dbFilter = {};
   }
-
-
 
   const dbParams = {
     page: Number(page),
@@ -82,8 +81,9 @@ export default async function Courses({
     );
   }
 
+  const t = await getTranslations("Courses")
   return (
-    <div>
+    <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-between gap-5">
         <div className="flex justify-between">
           <Filter
@@ -96,40 +96,56 @@ export default async function Courses({
             <Group />
           </div>
         </div>
-        <ActiveFilters colleges={colleges} degrees={degrees} departments={departments} />
+        <ActiveFilters
+          colleges={colleges}
+          degrees={degrees}
+          departments={departments}
+        />
       </div>
-      <Pages totalPages={totalPages} />
-      <div className="py-5 space-y-8">
-        {Object.entries(displayData).map(([groupName, courses]) => (
-          <div key={groupName} className="space-y-4">
-            {groupBy !== "none" && (
-              <h2 className="text-2xl font-bold border-b pb-2">{groupName}</h2>
-            )}
+      {courses.length > 0 ? (
+        <>
+          <Pages totalPages={totalPages} />
+          <div className="py-5 space-y-8">
+            {Object.entries(displayData).map(([groupName, courses]) => (
+              <div key={groupName} className="space-y-4">
+                {groupBy !== "none" && (
+                  <h2 className="text-2xl font-bold border-b pb-2">
+                    {groupName}
+                  </h2>
+                )}
 
-            <div className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(max(350px,30%),1fr))]">
-              {courses.map((course) => (
-                <Card key={course._id}>
-                  <CardHeader>
-                    <CardTitle>{course.name}</CardTitle>
-                    <CardDescription>{course.department.name}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="text-sm text-muted-foreground">
-                      <li>{course.degree.name}</li>
-                      <li>{course.college.name}</li>
-                    </ul>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Badge variant="outline">{course.hours} Credit Hours</Badge>
-                    <Button>View Sections</Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                <div className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(max(350px,30%),1fr))]">
+                  {courses.map((course) => (
+                    <Card key={course._id}>
+                      <CardHeader>
+                        <CardTitle>{course.name}</CardTitle>
+                        <CardDescription>
+                          {course.department.name}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ul className="text-sm text-muted-foreground">
+                          <li>{course.degree.name}</li>
+                          <li>{course.college.name}</li>
+                        </ul>
+                      </CardContent>
+                      <CardFooter className="flex justify-between">
+                        <Badge variant="outline">
+                          {course.hours} Credit Hours
+                        </Badge>
+                        <Button>View Sections</Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <Pages totalPages={totalPages} />
+          <Pages totalPages={totalPages} />
+        </>
+      ) : (
+        <div className="flex justify-center items-center flex-1 text-5xl font-bold">{t("no_courses_found")}</div>
+      )}
     </div>
   );
 }

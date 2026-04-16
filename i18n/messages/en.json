@@ -7,6 +7,39 @@
     "degrees":"Degrees",
     "colleges":"Colleges",
     "departments":"Departments",
+    "courses" : "Courses",
     "search":"Search"
+  },
+  "Courses":{
+    "Sort":{
+      "sort": "Sort",
+      "name": "Name",
+      "hours": "Hours"
+    },
+    "GroupBy": {
+      "group_by":"Group By",
+      "none":"None",
+      "degree":"Degree",
+      "college":"College",
+      "department":"Department"
+    },
+    "Filter":{
+      "filter" : "Filter",
+      "filter_courses":"Filter Courses",
+      "select_all":"Selcet All",
+      "apply_filters":"Apply Filters",
+      "active_filters":"Active Filters",
+      "clear_all":"Clear All",
+      "degrees":"Degrees",
+      "colleges":"Colleges",
+      "departments":"Departments",
+      "degree":"Degree",
+      "college":"College",
+      "department":"Department"
+    },
+    "next":"Next",
+    "previous":"Previous",
+    "no_courses_found":"No Courses Found"
   }
+
 }

@@ -11,6 +11,7 @@ import {
   PaginationNext,
 } from "../ui/pagination";
 import { generatePagination } from "@/lib/pageination_util";
+import { useTranslations } from "next-intl";
 
 interface PagesProps {
   totalPages: number;
@@ -32,6 +33,8 @@ export default function Pages({ totalPages }: PagesProps) {
 
   const allPages = generatePagination(currentPage, totalPages);
 
+  const t = useTranslations("Courses");
+
   return (
     <Pagination>
       <PaginationContent>
@@ -40,6 +43,7 @@ export default function Pages({ totalPages }: PagesProps) {
           <PaginationPrevious
             href={isFirstPage ? "#" : createPageURL(currentPage - 1)}
             className={isFirstPage ? "pointer-events-none opacity-50" : ""}
+            text={t("previous")}
           />
         </PaginationItem>
 
@@ -72,6 +76,7 @@ export default function Pages({ totalPages }: PagesProps) {
           <PaginationNext
             href={isLastPage ? "#" : createPageURL(currentPage + 1)}
             className={isLastPage ? "pointer-events-none opacity-50" : ""}
+            text={t("next")}
           />
         </PaginationItem>
       </PaginationContent>

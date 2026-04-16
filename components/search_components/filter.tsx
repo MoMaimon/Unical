@@ -20,6 +20,7 @@ import {
 
 import { useEffect, useState } from "react";
 import AccordionFilter from "./accordion-filter";
+import { useTranslations } from "next-intl";
 
 export default function FilterDrawer({
   degrees,
@@ -53,7 +54,7 @@ export default function FilterDrawer({
     try {
       const filterObj = JSON.parse(atob(filterParam));
       const andArray = filterObj.$and || [];
-      
+
       const newColleges = new Set<string>();
       const newDegrees = new Set<string>();
       const newDepartments = new Set<string>();
@@ -74,24 +75,31 @@ export default function FilterDrawer({
     }
   }, [filterParam]);
 
-  const activeFilterCount = collegesFilter.size + degreesFilter.size + departmentsFilter.size;
-
+  const activeFilterCount =
+    collegesFilter.size + degreesFilter.size + departmentsFilter.size;
 
   const createFilterObj = () => {
     const andArray: { $or: Record<string, string>[] }[] = [];
 
     if (collegesFilter.size > 0 && collegesFilter.size < colleges.length) {
-      const orArray = Array.from(collegesFilter).map(val => ({ college: val }));
+      const orArray = Array.from(collegesFilter).map((val) => ({
+        college: val,
+      }));
       andArray.push({ $or: orArray });
     }
 
     if (degreesFilter.size > 0 && degreesFilter.size < degrees.length) {
-      const orArray = Array.from(degreesFilter).map(val => ({ degree: val }));
+      const orArray = Array.from(degreesFilter).map((val) => ({ degree: val }));
       andArray.push({ $or: orArray });
     }
 
-    if (departmentsFilter.size > 0 && departmentsFilter.size < departments.length) {
-      const orArray = Array.from(departmentsFilter).map(val => ({ department: val }));
+    if (
+      departmentsFilter.size > 0 &&
+      departmentsFilter.size < departments.length
+    ) {
+      const orArray = Array.from(departmentsFilter).map((val) => ({
+        department: val,
+      }));
       andArray.push({ $or: orArray });
     }
 
@@ -118,12 +126,14 @@ export default function FilterDrawer({
     router.push(`?${params.toString()}`);
   };
 
+  const t = useTranslations("Courses.Filter");
+
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <FilterIcon className="w-4 h-4" />
-          Filters
+          {t("filter")}
           {activeFilterCount > 0 && (
             <span className="bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs ml-1">
               {activeFilterCount}
@@ -133,33 +143,33 @@ export default function FilterDrawer({
       </SheetTrigger>
       <SheetContent className="overflow-y-auto px-5">
         <SheetHeader>
-          <SheetTitle>Filter Courses</SheetTitle>
+          <SheetTitle>{t("filter_courses")}</SheetTitle>
         </SheetHeader>
 
         <div className="py-6 flex flex-col gap-5">
           <AccordionFilter
             colleges={degrees}
             collegesFilter={degreesFilter}
-            filterName="degrees"
+            filterName={t("degrees")}
             setCollegesFilter={setDegreesFilter}
           />
           <AccordionFilter
             colleges={colleges}
             collegesFilter={collegesFilter}
-            filterName="colleges"
+            filterName={t("colleges")}
             setCollegesFilter={setCollegesFilter}
           />
           <AccordionFilter
             colleges={departments}
             collegesFilter={departmentsFilter}
-            filterName="departments"
+            filterName={t("departments")}
             setCollegesFilter={setDepartmentsFilter}
           />
         </div>
         <SheetFooter className="mt-auto pb-4">
           <SheetClose asChild>
             <Button onClick={handleFilter} className="w-full">
-              Apply Filters
+              {t("apply_filters")}
             </Button>
           </SheetClose>
         </SheetFooter>
