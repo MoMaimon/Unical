@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { SearchBar } from "./ui/SearchBar";
 import { Button } from "./ui/button";
-import { useLocale, useTranslations } from "use-intl";
 import { LanguageSwitcher } from "./language-switcher";
 import { getLocale, getTranslations } from "next-intl/server";
 import { NavbarSearch } from "./navbar-search";
