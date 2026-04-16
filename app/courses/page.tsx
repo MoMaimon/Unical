@@ -1,3 +1,4 @@
+import ActiveFilters from "@/components/search_components/active-filters";
 import Filter from "@/components/search_components/filter";
 import Group from "@/components/search_components/group";
 import Pages from "@/components/search_components/pagination";
@@ -17,6 +18,8 @@ import {
   getCoursesPage,
   getTotalPages,
 } from "@/features/scraping/server/db/repository/course_repository";
+import { getDegrees } from "@/features/scraping/server/db/repository/degree_repository";
+import { getDepartments } from "@/features/scraping/server/db/repository/department_repository";
 
 export default async function Courses({
   searchParams,
@@ -25,26 +28,28 @@ export default async function Courses({
 }) {
   const params = await searchParams;
 
-  const filterCollegeName = params.college;
+  const filter = params.filter;
   const sortBy = params.sort;
   const groupBy = params.group || "none";
   const page = params.page || 1;
 
-  const colleges = await getColleges();
-
-  const dbFilter: Record<string, any> = {};
-
-  if (filterCollegeName) {
-    const targetCollege = colleges.find((c) => c.name === filterCollegeName);
-
-    if (targetCollege) {
-      dbFilter.college = targetCollege._id;
-    }
+  const [degrees, colleges, departments] = await Promise.all([
+    getDegrees(),
+    getColleges(),
+    getDepartments(),
+  ]);
+  let dbFilter: Record<string, any>;
+  if (filter) {
+    dbFilter = JSON.parse(Buffer.from(filter, "base64").toString("utf-8"));
+  } else {
+    dbFilter = {};
   }
+
+
 
   const dbParams = {
     page: Number(page),
-    limit: 20,
+    limit: 24,
     filter: dbFilter,
   };
   const courses = await getCoursesPage(dbParams);
@@ -79,12 +84,19 @@ export default async function Courses({
 
   return (
     <div>
-      <div className="flex justify-between">
-        <Filter colleges={colleges}></Filter>
-        <div className="flex gap-5">
-          <Sort />
-          <Group />
+      <div className="flex flex-col justify-between gap-5">
+        <div className="flex justify-between">
+          <Filter
+            colleges={colleges}
+            degrees={degrees}
+            departments={departments}
+          ></Filter>
+          <div className="flex gap-5">
+            <Sort />
+            <Group />
+          </div>
         </div>
+        <ActiveFilters colleges={colleges} degrees={degrees} departments={departments} />
       </div>
       <Pages totalPages={totalPages} />
       <div className="py-5 space-y-8">
