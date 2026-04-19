@@ -1,17 +1,21 @@
 "use client";
-import { Dispatch, SetStateAction } from "react";
+
 import { Button } from "../ui/button";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useCallback } from "react";
 
-export default function Sort() {
+interface SortProps {
+  options: string[];
+}
+export default function Sort({ options }: SortProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const currentSort = searchParams.get("sort");
 
-  const handleSort = (sortVal: string | null) => {
+ const handleSort = useCallback((sortVal: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
 
     if (sortVal) {
@@ -19,27 +23,25 @@ export default function Sort() {
     } else {
       params.delete("sort");
     }
-    router.push(`?${params.toString()}`);
-  };
+    
+    // scroll: false prevents the page from snapping to the top
+    router.push(`?${params.toString()}`, { scroll: false });
+  }, [searchParams, router]);
 
-  const t = useTranslations("Courses.Sort")
+  const t = useTranslations("Courses.Sort");
   return (
     <ButtonGroup>
       <ButtonGroupText>{t("sort")}</ButtonGroupText>
-      <Button
-        variant={currentSort === "name" ? "default" : "outline"}
-        onClick={() => handleSort(currentSort === "name" ? null : "name")}
-        className="border-0"
-      >
-        {t("name")}
-      </Button>
-      <Button
-        variant={currentSort === "hours" ? "default" : "outline"}
-        onClick={() => handleSort(currentSort === "hours" ? null : "hours")}
-        className="border-0"
-      >
-        {t("hours")}
-      </Button>
+      {options.map((option) => (
+        <Button
+          variant={currentSort === option ? "default" : "outline"}
+          onClick={() => handleSort(currentSort === option ? null : option)}
+          className="border-0"
+          key={option}
+        >
+          {t(option)}
+        </Button>
+      ))}
     </ButtonGroup>
   );
 }

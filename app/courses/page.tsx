@@ -64,7 +64,9 @@ export default async function Courses({
             departments={departments}
           />
           <div className="flex gap-5">
-            <Sort />
+            <Suspense fallback={<div>Loading</div>}>
+              <Sort options={["name", "hours"]} />
+            </Suspense>
             <Group />
           </div>
         </div>
