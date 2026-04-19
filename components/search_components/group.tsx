@@ -9,24 +9,32 @@ import {
   DropdownMenu,
 } from "../ui/dropdown-menu";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
 
-export default function () {
+interface GroupByProps {
+  options: string[];
+}
+
+export default function ({ options }: GroupByProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const currentGroup = searchParams.get("group") || "none";
 
-  const handleGroup = (groupVal: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const handleGroup = useCallback(
+    (groupVal: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    if (groupVal && groupVal !== "none") {
-      params.set("group", groupVal);
-    } else {
-      params.delete("group");
-    }
+      if (groupVal && groupVal !== "none") {
+        params.set("group", groupVal);
+      } else {
+        params.delete("group");
+      }
 
-    router.push(`?${params.toString()}`);
-  };
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
   const t = useTranslations("Courses.GroupBy");
   return (
     <ButtonGroup>
@@ -42,15 +50,12 @@ export default function () {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => handleGroup("degree")}>
-            {t("degree")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleGroup("college")}>
-            {t("college")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleGroup("department")}>
-            {t("department")}
-          </DropdownMenuItem>
+          {options.map((option) => (
+            <DropdownMenuItem onClick={() => handleGroup(option)} key={option}>
+              {t(option)}
+            </DropdownMenuItem>
+          ))}
+
           <DropdownMenuItem
             onClick={() => handleGroup("none")}
             variant="destructive"
