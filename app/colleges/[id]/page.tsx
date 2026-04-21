@@ -7,7 +7,7 @@ import Link from "next/link";
 export default async function page({ params }: { params: Promise<{ id: string }> }) {
  
   const {id} = await params
-  const res = getCoursesByCollege(Number(id))
+  const res = getCoursesByCollege(id)
   const data = await res
   return (<div className="grid gap-5 grid-cols-[repeat(auto-fit,minmax(350px,1fr))] p-5">
       {data?.map((value) => (

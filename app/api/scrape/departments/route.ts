@@ -17,7 +17,7 @@ export const GET = async (req: NextRequest) => {
         { status: 200 },
       );
     } else {
-      const data = await getDepartmentsByCollege(parseInt(collegeId, 10));
+      const data = await getDepartmentsByCollege(collegeId);
       return NextResponse.json(
         {
           message: "Departments fetched successfully",

@@ -4,10 +4,10 @@ import Degree from "../schema/degrees";
 
 /**
  * Retrieves a single degree by its ID.
- * @param {number} id - The ID of the degree.
+ * @param {string} id - The ID of the degree.
  * @returns {Promise<DegreeSchema | null>} The degree object, or null if not found.
  */
-export const getDegree = async (id: number): Promise<DegreeSchema | null> => {
+export const getDegree = async (id: string): Promise<DegreeSchema | null> => {
   await connect();
   const degree = await Degree.findById(id).lean<DegreeSchema>();
   return degree;

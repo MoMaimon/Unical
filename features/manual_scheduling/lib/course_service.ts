@@ -20,15 +20,15 @@ export class CourseService {
       _id: string;
       name: string;
       degree: {
-        _id: number;
+        _id: string;
         name: string;
       };
       college: {
-        _id: number;
+        _id: string;
         name: string;
       };
       department: {
-        _id: number;
+        _id: string;
         name: string;
       };
       hours: number;
@@ -40,9 +40,9 @@ export class CourseService {
       const course = new Course(
         raw._id,
         raw.name,
-        { id: raw.degree._id.toString(), name: raw.degree.name },
-        { id: raw.college._id.toString(), name: raw.college.name },
-        { id: raw.department._id.toString(), name: raw.department.name },
+        { id: raw.degree._id, name: raw.degree.name },
+        { id: raw.college._id, name: raw.college.name },
+        { id: raw.department._id, name: raw.department.name },
         raw.hours,
       );
       courseMap.set(course.id, course);

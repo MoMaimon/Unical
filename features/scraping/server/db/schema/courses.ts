@@ -4,9 +4,9 @@ const coursesSchema = new Schema(
   {
     _id: { type: String, required: true },
     name: { type: String, required: true },
-    degree: { type: Number, ref: "Degree" },
-    college: { type: Number, ref: "College" },
-    department: { type: Number, ref: "Department" },
+    degree: { type: String, ref: "Degree" },
+    college: { type: String, ref: "College" },
+    department: { type: String, ref: "Department" },
     hours: { type: Number, required: true },
   },
   {

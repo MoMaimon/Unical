@@ -4,10 +4,10 @@ import connect from "../db";
 
 /**
  * Retrieves a single department by its ID.
- * @param {number} id - The ID of the department.
+ * @param {string} id - The ID of the department.
  * @returns {Promise<DepartmentSchema | null>} The department object, or null if not found.
  */
-export const getCollege = async (id: number): Promise<CollegeSchema | null> => {
+export const getCollege = async (id: string): Promise<CollegeSchema | null> => {
   await connect();
   const college = await College.findById(id).lean<CollegeSchema>();
   return college;
