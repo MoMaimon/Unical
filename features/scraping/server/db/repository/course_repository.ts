@@ -21,11 +21,11 @@ export const getCourse = async (id: string): Promise<CourseSchema | null> => {
 /**
  * Retrieves all courses that belong to a specific college.
  * Note: For large datasets, consider using pagination instead.
- * * @param {number} collegeId - The ID of the college.
+ * * @param {string} collegeId - The ID of the college.
  * @returns {Promise<CourseSchema[]>} An array of matching courses.
  */
 export const getCoursesByCollege = async (
-  collegeId: number,
+  collegeId: string,
 ): Promise<CourseSchema[]> => {
   await connect();
   const courses = await Course.find({ college: collegeId }).lean<

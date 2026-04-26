@@ -8,13 +8,7 @@ export const GET = async (
   try {
     const { id } = await params;
 
-    if (!Number.isInteger(Number(id))) {
-      return NextResponse.json(
-        { message: "Invalid Department ID" },
-        { status: 400 },
-      );
-    }
-    const data = await getDepartment(Number(id));
+    const data = await getDepartment(id);
     if (!data) {
       return NextResponse.json(
         { message: "Department not found" },

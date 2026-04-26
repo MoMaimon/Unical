@@ -20,7 +20,7 @@ export const getSection = async (
   return section;
 };
 
-export const getCollegeFilter = async (collegeId: number) => {
+export const getCollegeFilter = async (collegeId: string) => {
   await connect();
 
   const courses = await Course.find({ college: collegeId })
@@ -31,7 +31,7 @@ export const getCollegeFilter = async (collegeId: number) => {
   return coursesIds;
 };
 
-export const getDepartmentFilter = async (departmentId: number) => {
+export const getDepartmentFilter = async (departmentId: string) => {
   await connect();
 
   const courses = await Course.find({ department: departmentId })

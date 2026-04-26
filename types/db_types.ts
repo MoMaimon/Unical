@@ -3,7 +3,7 @@
 /* -------------------------------------------------------------------------- */
 
 interface BaseSchema {
-  _id: number;
+  _id: string;
   __v: number;
   createdAt: Date;
   updatedAt: Date;
@@ -19,15 +19,14 @@ export interface CollegeSchema extends BaseSchema {
 
 export interface DepartmentSchema extends BaseSchema {
   name: string;
-  college: number;
+  college: string;
 }
 
-export interface CourseSchema extends Omit<BaseSchema, "_id"> {
-  _id: string;
+export interface CourseSchema extends BaseSchema {
   name: string;
-  degree: number;
-  college: number;
-  department: number;
+  degree: string;
+  college: string;
+  department: string;
   hours: number;
 }
 

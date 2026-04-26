@@ -5,11 +5,11 @@ import { cacheLife } from "next/cache";
 
 /**
  * Retrieves a single department by its ID.
- * @param {number} id - The ID of the department.
+ * @param {string} id - The ID of the department.
  * @returns {Promise<DepartmentSchema | null>} The department object, or null if not found.
  */
 export const getDepartment = async (
-  id: number,
+  id: string,
 ): Promise<DepartmentSchema | null> => {
   await connect();
   const department = await Department.findById(id).lean<DepartmentSchema>();
@@ -28,11 +28,11 @@ export const getDepartments = async (): Promise<DepartmentSchema[]> => {
 
 /**
  * Retrieves all departments that belong to a specific college.
- * * @param {number} collegeId - The ID of the college.
+ * * @param {string} collegeId - The ID of the college.
  * @returns {Promise<DepartmentSchema[]>} An array of matching departments.
  */
 export const getDepartmentsByCollege = async (
-  collegeId: number,
+  collegeId: string,
 ): Promise<DepartmentSchema[]> => {
   await connect();
   const departments = await Department.find({ college: collegeId }).lean<

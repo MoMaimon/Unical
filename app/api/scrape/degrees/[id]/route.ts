@@ -1,4 +1,3 @@
-
 import { getDegree } from "@/features/scraping/server/db/repository/degree_repository";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,13 +8,7 @@ export const GET = async (
   try {
     const { id } = await params;
 
-    if (!Number.isInteger(Number(id))) {
-      return NextResponse.json(
-        { message: "Invalid Degree ID" },
-        { status: 400 },
-      );
-    }
-    const data = await getDegree(Number(id));
+    const data = await getDegree(id);
     if (!data) {
       return NextResponse.json(
         { message: "Degree not found" },

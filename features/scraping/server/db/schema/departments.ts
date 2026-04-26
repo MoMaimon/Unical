@@ -2,9 +2,9 @@ import mongoose, { Schema, model, models } from "mongoose";
 
 const departmentsSchema = new Schema(
   {
-    _id: { type: Number, required: true },
+    _id: { type: String, required: true },
     name: { type: String, required: true },
-    college: { type: Number, ref: "College" },
+    college: { type: String, ref: "College" },
   },
   {
     timestamps: true,
