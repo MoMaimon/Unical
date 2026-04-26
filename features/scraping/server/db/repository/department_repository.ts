@@ -1,6 +1,7 @@
 import { DepartmentSchema } from "@/types/db_types";
 import connect from "../db";
 import Department from "../schema/departments";
+import { cacheLife } from "next/cache";
 
 /**
  * Retrieves a single department by its ID.
@@ -38,4 +39,10 @@ export const getDepartmentsByCollege = async (
     DepartmentSchema[]
   >();
   return departments;
+};
+
+export const getDepartmentsCashed = async () => {
+  "use cache";
+  cacheLife("weeks");
+  return await getDepartments();
 };

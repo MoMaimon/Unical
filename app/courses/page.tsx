@@ -3,9 +3,9 @@ import ActiveFilters from "@/components/search_components/active-filters";
 import Filter from "@/components/search_components/filter";
 import Group from "@/components/search_components/group";
 import Sort from "@/components/search_components/sort";
-import { getColleges } from "@/features/scraping/server/db/repository/college_repository";
-import { getDegrees } from "@/features/scraping/server/db/repository/degree_repository";
-import { getDepartments } from "@/features/scraping/server/db/repository/department_repository";
+import { getCollegesCached } from "@/features/scraping/server/db/repository/college_repository";
+import { getDegreesCashed } from "@/features/scraping/server/db/repository/degree_repository";
+import { getDepartmentsCashed } from "@/features/scraping/server/db/repository/department_repository";
 import { Suspense } from "react";
 
 function CourseListSkeleton() {
@@ -32,9 +32,9 @@ export default async function Courses({
   const page = params.page || 1;
 
   const [degrees, colleges, departments] = await Promise.all([
-    getDegrees(),
-    getColleges(),
-    getDepartments(),
+    getDegreesCashed(),
+    getCollegesCached(),
+    getDepartmentsCashed(),
   ]);
 
   let dbFilter: Record<string, any> = {};

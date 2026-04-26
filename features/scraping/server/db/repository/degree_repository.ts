@@ -1,6 +1,7 @@
 import { DegreeSchema } from "@/types/db_types";
 import connect from "../db";
 import Degree from "../schema/degrees";
+import { cacheLife } from "next/cache";
 
 /**
  * Retrieves a single degree by its ID.
@@ -21,4 +22,10 @@ export const getDegrees = async (): Promise<DegreeSchema[]> => {
   await connect();
   const degrees = await Degree.find({}).lean<DegreeSchema[]>();
   return degrees;
+};
+
+export const getDegreesCashed = async () => {
+  "use cache";
+  cacheLife("max");
+  return await getDegrees();
 };
