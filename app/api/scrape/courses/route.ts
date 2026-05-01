@@ -1,4 +1,3 @@
-
 import { getCoursesPage } from "@/features/scraping/server/db/repository/course_repository";
 import { syncCourses } from "@/features/scraping/server/services/scrape_service";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,12 +13,12 @@ export const GET = async (req: NextRequest) => {
 
     const collegeId = searchParams.get("college");
     if (collegeId) {
-      filter.college = Number(collegeId);
+      filter.college = collegeId;
     }
 
     const departmentId = searchParams.get("department");
     if (departmentId) {
-      filter.department = Number(departmentId);
+      filter.department = departmentId;
     }
 
     const courses = await getCoursesPage({ page, limit, filter });
@@ -55,18 +54,17 @@ export const POST = async (req: NextRequest) => {
         { status: 400 },
       );
     }
-    if (!Number.isInteger(Number(collegeId))) {
-      return NextResponse.json(
-        { message: "Invalid College ID" },
-        { status: 400 },
-      );
-    }
-    await syncCourses(Number(collegeId));
+
+    await syncCourses(collegeId);
+
     return NextResponse.json(
-      {
-        message: "Courses synced successfully.",
-      },
+      { message: "Courses synced successfully." },
       { status: 200 },
     );
-  } catch (error) {}
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: "Failed to sync courses", details: error.message },
+      { status: 500 },
+    );
+  }
 };

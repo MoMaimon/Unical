@@ -1,0 +1,69 @@
+"use client";
+import { useTranslations } from "next-intl";
+import { Button } from "../ui/button";
+import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
+import {
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenu,
+} from "../ui/dropdown-menu";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback } from "react";
+
+interface GroupByProps {
+  options: string[];
+}
+
+export default function ({ options }: GroupByProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const currentGroup = searchParams.get("group") || "none";
+
+  const handleGroup = useCallback(
+    (groupVal: string | null) => {
+      const params = new URLSearchParams(searchParams.toString());
+
+      if (groupVal && groupVal !== "none") {
+        params.set("group", groupVal);
+      } else {
+        params.delete("group");
+      }
+
+      router.push(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router],
+  );
+  const t = useTranslations("Courses.GroupBy");
+  return (
+    <ButtonGroup>
+      <ButtonGroupText>{t("group_by")}</ButtonGroupText>
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant={currentGroup !== "none" ? "default" : "outline"}
+            className="capitalize border-0"
+          >
+            {t(currentGroup)}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          {options.map((option) => (
+            <DropdownMenuItem onClick={() => handleGroup(option)} key={option}>
+              {t(option)}
+            </DropdownMenuItem>
+          ))}
+
+          <DropdownMenuItem
+            onClick={() => handleGroup("none")}
+            variant="destructive"
+          >
+            {t("none")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </ButtonGroup>
+  );
+}

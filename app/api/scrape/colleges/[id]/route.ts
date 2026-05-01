@@ -1,4 +1,3 @@
-
 import { getCollege } from "@/features/scraping/server/db/repository/college_repository";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,13 +8,7 @@ export const GET = async (
   try {
     const { id } = await params;
 
-    if (!Number.isInteger(Number(id))) {
-      return NextResponse.json(
-        { message: "Invalid College ID" },
-        { status: 400 },
-      );
-    }
-    const data = await getCollege(Number(id));
+    const data = await getCollege(id);
     if (!data) {
       return NextResponse.json(
         { message: "College not found" },

@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { SearchBar } from "./ui/SearchBar";
 import { Button } from "./ui/button";
-import { useLocale, useTranslations } from "use-intl";
 import { LanguageSwitcher } from "./language-switcher";
 import { getLocale, getTranslations } from "next-intl/server";
 import { NavbarSearch } from "./navbar-search";
@@ -24,8 +22,8 @@ export default async function NavBar() {
         <div className="flex items-center gap-4">
           <LanguageSwitcher currentLocale={locale}></LanguageSwitcher>
           <Button variant={"ghost"} asChild>
-            <Link href="/departments" className="text-xl">
-              {t("departments")}
+            <Link href="/courses" className="text-xl">
+              {t("courses")}
             </Link>
           </Button>
           <Button variant={"ghost"} asChild>

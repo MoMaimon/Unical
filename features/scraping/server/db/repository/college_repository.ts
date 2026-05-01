@@ -1,13 +1,14 @@
 import { CollegeSchema } from "@/types/db_types";
 import College from "../schema/colleges";
 import connect from "../db";
+import { cacheLife } from "next/cache";
 
 /**
  * Retrieves a single department by its ID.
- * @param {number} id - The ID of the department.
+ * @param {string} id - The ID of the department.
  * @returns {Promise<DepartmentSchema | null>} The department object, or null if not found.
  */
-export const getCollege = async (id: number): Promise<CollegeSchema | null> => {
+export const getCollege = async (id: string): Promise<CollegeSchema | null> => {
   await connect();
   const college = await College.findById(id).lean<CollegeSchema>();
   return college;
@@ -21,4 +22,10 @@ export const getColleges = async (): Promise<CollegeSchema[]> => {
   await connect();
   const colleges = await College.find({}).lean<CollegeSchema[]>();
   return colleges;
+};
+
+export const getCollegesCached = async () => {
+  "use cache";
+  cacheLife("weeks");
+  return await getColleges();
 };

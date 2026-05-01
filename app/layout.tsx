@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 import NavBar from "@/components/nav-bar";
+import { DirectionProvider } from "@/components/ui/direction";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -27,22 +28,24 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      dir={direction}
       className="dark h-full"
       suppressHydrationWarning
     >
       <body
         className={cn(
-          "h-screen bg-background font-sans antialiased",
+          "relative min-h-screen bg-background font-sans antialiased",
           cairo.variable,
         )}
       >
+        <div className="absolute -z-10 inset-0 h-full w-full bg-background bg-[radial-gradient(circle,#73737350_1px,transparent_1px)] bg-size-[25px_25px] mask-[radial-gradient(ellipse_80%_80%_at_50%_0%,#000_40%,transparent_100%)]" />
         {/* <div className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(circle,#73737350_1px,transparent_1px)] bg-size-[25px_25px]"></div> */}
-        <div className="absolute -z-10 inset-0 h-full w-full bg-[linear-gradient(to_right,#73737320_1px,transparent_1px),linear-gradient(to_bottom,#73737320_1px,transparent_1px)] bg-size-[50px_50px]" />
-        <div className="flex flex-col h-screen">
+        {/* <div className="absolute -z-10 inset-0 h-full w-full bg-[linear-gradient(to_right,#73737320_1px,transparent_1px),linear-gradient(to_bottom,#73737320_1px,transparent_1px)] bg-size-[50px_50px]" /> */}
+        <div className="flex flex-col min-h-screen">
           <NextIntlClientProvider>
             <NavBar />
-            <main className="flex flex-col flex-1 pt-24">{children}</main>
+            <DirectionProvider dir={direction}>
+              <main dir={direction} className="flex flex-col flex-1 p-24">{children}</main>
+            </DirectionProvider>
           </NextIntlClientProvider>
         </div>
       </body>
