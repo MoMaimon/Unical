@@ -1,6 +1,5 @@
 import connect from "../server/db/db";
 import { FetchParams } from "../types/scrape_types";
-
 const API_URL = "https://app2.bau.edu.jo:7799/courses/actions/rmiMethod";
 const DEFAULT_HEADERS = {
   accept: "*/*",
@@ -15,6 +14,7 @@ const DEFAULT_HEADERS = {
   "sec-fetch-site": "same-origin",
   Referer: "https://app2.bau.edu.jo:7799/courses/index.jsp",
 };
+
 
 /**
  * Fetches data from the BAU courses API by simulating an RMI (Remote Method Invocation) POST request.

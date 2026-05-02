@@ -1,9 +1,9 @@
-import { College, Course, Department, Degree, Section } from "@/types/Data";
+import { CollegeApiResponse, CourseApiResponse, DepartmentApiResponse, DegreeApiResponse, SectionApiResponse } from "./types/APIResponse";
 
 export interface IFetchProvider {
-    fetchDegrees(): Promise<Degree[]>;
-    fetchColleges(): Promise<College[]>;
-    fetchDepartments(collegeId: string): Promise<Department[]>;
-    fetchCourses(degreeId: string, collegeId: string, departmentId: string): Promise<Course[]>;
-    fetchSections(degreeId: string, collegeId: string, departmentId: string, courseId: string): Promise<Section[]>;
+    fetchDegrees(): Promise<DegreeApiResponse[]>;
+    fetchColleges(): Promise<CollegeApiResponse[]>;
+    fetchDepartments(collegeId: string): Promise<DepartmentApiResponse[]>;
+    fetchCourses(degreeId: string, collegeId: string, departmentId: string): Promise<CourseApiResponse[]>;
+    fetchSections(degreeId: string, collegeId: string, departmentId: string): Promise<SectionApiResponse[]>;
 }

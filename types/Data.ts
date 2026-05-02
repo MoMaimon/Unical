@@ -9,22 +9,22 @@ export interface Degree extends Data { }
 export interface College extends Data { }
 
 export interface Department extends Data {
-    college: College;
+    college: string;
 }
 
 export interface Course {
     id: string; 
     name: string;
     code: string;
-    degree: Degree;
-    department: Department;
+    degree: string;
+    department: string;
     creditHours: number;
 }
 
 export interface Section {
     id: string;
-    course: Course;
-    lecturer: Lecturer;
+    course: string;
+    lecturer: string;
     schedule: SchedulePart[];
     sectionNo: number;
     status:number;
@@ -42,7 +42,7 @@ export interface SchedulePart {
     endTime:string;
     startMinutes:number;
     endMinutes:number;
-    section:Section;
+    section:string;
     room:string;
     isOnline:boolean;
 }
