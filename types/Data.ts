@@ -1,24 +1,19 @@
-export interface Degree {
+export interface Data {
     id: string;
     arabic_name: string;
     english_name: string;
 }
 
-export interface College {
-    id: string;
-    arabic_name: string;
-    english_name: string;
-}
+export interface Degree extends Data { }
 
-export interface Department {
-    id: string;
-    arabic_name: string;
-    english_name: string;
+export interface College extends Data { }
+
+export interface Department extends Data {
     college: College;
 }
 
 export interface Course {
-    id: string;
+    id: string; 
     name: string;
     code: string;
     degree: Degree;
@@ -30,7 +25,9 @@ export interface Section {
     id: string;
     course: Course;
     lecturer: Lecturer;
+    schedule: SchedulePart[];
     sectionNo: number;
+    status:number;
 }
 
 export interface Lecturer {

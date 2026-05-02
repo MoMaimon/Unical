@@ -1,15 +1,14 @@
-import { CollegeSchema, CourseSchema, DepartmentSchema, DegreeSchema, SectionSchema } from "@/types/db_types";
 import { CourseQuery } from "./types/CourseQuery";
 import { PaginatedResult } from "./types/PaginatedResult";
-import { IFetchProvider } from "./IFetchProvider";
+import { College, Degree, Department, Course, Section } from "@/types/Data";
 
 export interface IUniversityProvider {
 
-    getDegrees(): Promise<DegreeSchema[]>;
-    getColleges(): Promise<CollegeSchema[]>;
-    getDepartments(collegeId?: string): Promise<DepartmentSchema[]>;
-    getCourses(query?: CourseQuery): Promise<PaginatedResult<CourseSchema>>;
-    getSections(courseId: string): Promise<SectionSchema[]>;
+    getDegrees(): Promise<Degree[]>;
+    getColleges(): Promise<College[]>;
+    getDepartments(collegeId?: string): Promise<Department[]>;
+    getCourses(query?: CourseQuery): Promise<PaginatedResult<Course>>;
+    getSections(courseId: string): Promise<Section[]>;
 
     //sync methods
     syncAll(): void;

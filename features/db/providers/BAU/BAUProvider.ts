@@ -1,26 +1,26 @@
 import { IUniversityProvider } from "../../IUniversityProvider";
-import { CollegeSchema, CourseSchema, DepartmentSchema, DegreeSchema, SectionSchema } from "@/types/db_types";
 import { CourseQuery } from "../../types/CourseQuery";
 import { PaginatedResult } from "../../types/PaginatedResult";
 import { BAUFetchProvider } from "./BAUFetchProvider";
+import { Degree, College, Department, Course, Section } from "@/types/Data";
 
 export class BAUProvider implements IUniversityProvider {
     constructor(private fetchProvider: BAUFetchProvider) { }
 
     // read methods
-    async getDegrees(): Promise<DegreeSchema[]> {
+    async getDegrees(): Promise<Degree[]> {
         throw new Error("Method not implemented.");
     }
-    async getColleges(): Promise<CollegeSchema[]> {
+    async getColleges(): Promise<College[]> {
         throw new Error("Method not implemented.");
     }
-    async getDepartments(collegeId?: string | undefined): Promise<DepartmentSchema[]> {
+    async getDepartments(collegeId?: string | undefined): Promise<Department[]> {
         throw new Error("Method not implemented.");
     }
-    async getCourses(query?: CourseQuery | undefined): Promise<PaginatedResult<CourseSchema>> {
+    async getCourses(query?: CourseQuery | undefined): Promise<PaginatedResult<Course>> {
         throw new Error("Method not implemented.");
     }
-    async getSections(courseId: string): Promise<SectionSchema[]> {
+    async getSections(courseId: string): Promise<Section[]> {
         throw new Error("Method not implemented.");
     }
 

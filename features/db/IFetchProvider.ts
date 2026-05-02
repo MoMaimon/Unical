@@ -1,9 +1,9 @@
-import { CollegeSchema, CourseSchema, DegreeSchema, DepartmentSchema, SectionSchema } from "@/types/db_types";
+import { College, Course, Department, Degree, Section } from "@/types/Data";
 
 export interface IFetchProvider {
-    fetchDegrees(): Promise<DegreeSchema[]>;
-    fetchColleges(): Promise<CollegeSchema[]>;
-    fetchDepartments(collegeId: string): Promise<DepartmentSchema[]>;
-    fetchCourses(degreeId: string, collegeId: string, departmentId: string): Promise<CourseSchema[]>;
-    fetchSections(degreeId: string, collegeId: string, departmentId: string, courseId: string): Promise<SectionSchema[]>;
+    fetchDegrees(): Promise<Degree[]>;
+    fetchColleges(): Promise<College[]>;
+    fetchDepartments(collegeId: string): Promise<Department[]>;
+    fetchCourses(degreeId: string, collegeId: string, departmentId: string): Promise<Course[]>;
+    fetchSections(degreeId: string, collegeId: string, departmentId: string, courseId: string): Promise<Section[]>;
 }

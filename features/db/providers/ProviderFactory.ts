@@ -1,9 +1,9 @@
-import { CollegeSchema, CourseSchema, DepartmentSchema, DegreeSchema, SectionSchema } from "@/types/db_types";
 import { IUniversityProvider } from "../IUniversityProvider";
 import { CourseQuery } from "../types/CourseQuery";
 import { PaginatedResult } from "../types/PaginatedResult";
 import { BAUFetchProvider } from "./BAU/BAUFetchProvider";
 import { BAUProvider } from "./BAU/BAUProvider";
+import { College, Course, Department, Degree, Section } from "@/types/Data";
 
 export class ProviderFactory implements IUniversityProvider {
     private provider?: IUniversityProvider;
@@ -13,23 +13,23 @@ export class ProviderFactory implements IUniversityProvider {
     }
 
     // read methods
-    getDegrees(): Promise<DegreeSchema[]> {
+    getDegrees(): Promise<Degree[]> {
         if (!this.provider) throw new Error("Provider not initialized");
         return this.provider.getDegrees();
     }
-    getColleges(): Promise<CollegeSchema[]> {
+    getColleges(): Promise<College[]> {
         if (!this.provider) throw new Error("Provider not initialized");
         return this.provider.getColleges();
     }
-    getDepartments(collegeId?: string): Promise<DepartmentSchema[]> {
+    getDepartments(collegeId?: string): Promise<Department[]> {
         if (!this.provider) throw new Error("Provider not initialized");
         return this.provider.getDepartments(collegeId);
     }
-    getCourses(query?: CourseQuery): Promise<PaginatedResult<CourseSchema>> {
+    getCourses(query?: CourseQuery): Promise<PaginatedResult<Course>> {
         if (!this.provider) throw new Error("Provider not initialized");
         return this.provider.getCourses(query);
     }
-    getSections(courseId: string): Promise<SectionSchema[]> {
+    getSections(courseId: string): Promise<Section[]> {
         if (!this.provider) throw new Error("Provider not initialized");
         return this.provider.getSections(courseId);
     }
