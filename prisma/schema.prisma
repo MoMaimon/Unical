@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Degrees {
+  id          String    @id @default(cuid())
+  courses     Courses[]
+  arabicName  String
+  englishName String
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+}
+
+model Colleges {
+  id          String        @id @default(cuid())
+  departments Departments[]
+  arabicName  String
+  englishName String
+  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime      @default(now())
+}
+
+model Departments {
+  id          String    @id @default(cuid())
+  college     Colleges  @relation(fields: [collegeId], references: [id])
+  collegeId   String
+  courses     Courses[]
+  arabicName  String
+  englishName String
+  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime  @default(now())
+}
+
+model Courses {
+  id           String      @id @default(cuid())
+  degree       Degrees     @relation(fields: [degreeId], references: [id])
+  department   Departments @relation(fields: [departmentId], references: [id])
+  degreeId     String
+  departmentId String
+  sections     Sections[]
+  courseCode   String      @unique
+  arabicName   String
+  englishName  String
+  creditHours  Int
+  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime    @default(now())
+}
+
+model Lecturer {
+  id        String     @id @default(cuid())
+  sections  Sections[]
+  name      String
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+}
+
+model Sections {
+  id         String   @id @default(cuid())
+  course     Courses  @relation(fields: [courseId], references: [id])
+  lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+  courseId   String
+  lecturerId String
+  times      Times[]
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+}
+
+model Times {
+  id           String   @id @default(cuid())
+  section      Sections @relation(fields: [sectionId], references: [id])
+  sectionId    String
+  days         Int
+  startTime    DateTime
+  endTime      DateTime
+  startMinutes Int
+  endMinutes   Int
+  room         String
+  isOnline     Boolean
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+}
