@@ -1,6 +1,7 @@
 import { IUniversityProvider } from "../../IUniversityProvider";
 import { CourseQuery } from "../../types/CourseQuery";
 import { PaginatedResult } from "../../types/PaginatedResult";
+import { prisma } from "../../utils/prisma";
 import { BAUFetchProvider } from "./BAUFetchProvider";
 import { Degree, College, Department, Course, Section } from "@/types/Data";
 
@@ -9,13 +10,15 @@ export class BAUProvider implements IUniversityProvider {
 
     // read methods
     async getDegrees(): Promise<Degree[]> {
-        throw new Error("Method not implemented.");
+        return await prisma.degrees.findMany()
     }
     async getColleges(): Promise<College[]> {
-        throw new Error("Method not implemented.");
+        return await prisma.colleges.findMany()
     }
     async getDepartments(collegeId?: string | undefined): Promise<Department[]> {
-        throw new Error("Method not implemented.");
+        return await prisma.departments.findMany({where:{
+            collegeId: collegeId
+        }})
     }
     async getCourses(query?: CourseQuery | undefined): Promise<PaginatedResult<Course>> {
         throw new Error("Method not implemented.");

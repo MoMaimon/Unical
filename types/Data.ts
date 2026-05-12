@@ -1,7 +1,7 @@
 export interface Data {
     id: string;
-    arabic_name: string;
-    english_name: string;
+    arabicName: string;
+    englishName: string;
 }
 
 export interface Degree extends Data { }
@@ -9,15 +9,15 @@ export interface Degree extends Data { }
 export interface College extends Data { }
 
 export interface Department extends Data {
-    college: string;
+    collegeId: string;
 }
 
 export interface Course {
     id: string; 
     name: string;
     code: string;
-    degree: string;
-    department: string;
+    degreeId: string;
+    departmentId: string;
     creditHours: number;
 }
 
