@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import ExprTree from "../lib/BinaryExpTree";
+import { ExprTree, TreeNode } from "../lib/BinaryExpTree";
 
 describe("ExprTree Parser", () => {
   let treeBuilder: ExprTree;
@@ -47,9 +47,15 @@ describe("ExprTree Parser", () => {
         "'ADMIN'",
       ]);
     });
+
+    it("handles negative numbers", () => {
+      const query = "creditHours eq -3";
+      expect(treeBuilder.tokenize(query)).toEqual(["creditHours", "eq", "-3"]);
+    });
+
   });
 
-  describe("infixToPostfix() (Shunting Yard Algorithm)", () => {
+  describe("infixToPostfix()", () => {
     it("converts a simple expression", () => {
       const tokens = ["age", "gte", "18"];
       const postfix = treeBuilder.infixToPostfix(tokens);
@@ -90,7 +96,6 @@ describe("ExprTree Parser", () => {
     });
 
     it("successfully parses the Boss Fight string into Postfix", () => {
-      // Removing the '?filter=' part as it's not part of the expression tree logic
       const query =
         "(department.englishName in ['Computer Science', 'Software Engineering'] OR department.arabicName like '%حاسوب%') AND (creditHours gte 3 AND (sections.times.isOnline eq true OR sections.lecturer.name eq 'Dr. Smith')) AND updatedAt isNotNull";
 
@@ -104,7 +109,7 @@ describe("ExprTree Parser", () => {
         "department.arabicName",
         "'%حاسوب%'",
         "like",
-        "OR", // End of first parenthesis group
+        "OR",
         "creditHours",
         "3",
         "gte",
@@ -114,15 +119,67 @@ describe("ExprTree Parser", () => {
         "sections.lecturer.name",
         "'Dr. Smith'",
         "eq",
-        "OR", // End of innermost parenthesis
-        "AND", // End of second main parenthesis group
-        "AND", // Connects the two main groups
+        "OR",
+        "AND",
+        "AND",
         "updatedAt",
         "isNotNull",
-        "AND", // Connects everything to the final isNotNull
+        "AND",
       ]);
     });
   });
-  
-});
 
+  describe("getExprTree() (Building the AST)", () => {
+    it("builds a simple binary tree", () => {
+      const query = "creditHours gte 3";
+      const tree = treeBuilder.getExprTree(query);
+
+      expect(tree).toEqual(
+        new TreeNode("gte", new TreeNode("creditHours"), new TreeNode("3")),
+      );
+    });
+
+    it("builds a tree with AND/OR logic", () => {
+      const query = "age eq 18 AND role eq 'ADMIN'";
+      const tree = treeBuilder.getExprTree(query);
+
+      expect(tree).toEqual(
+        new TreeNode(
+          "AND",
+          new TreeNode("eq", new TreeNode("age"), new TreeNode("18")),
+          new TreeNode("eq", new TreeNode("role"), new TreeNode("'ADMIN'")),
+        ),
+      );
+    });
+
+    it("handles Unary operators (isNotNull) as single-child nodes", () => {
+      const query = "updatedAt isNotNull";
+      const tree = treeBuilder.getExprTree(query);
+
+      // Unary operators usually put the operand on the left, and right stays null
+      expect(tree).toEqual(
+        new TreeNode("isNotNull", new TreeNode("updatedAt"), null),
+      );
+    });
+
+    it("honors parenthesis groupings in the final tree", () => {
+      // If precedence breaks, AND would be the root. With parenthesis, OR is the root.
+      const query = "(A eq 1 AND B eq 2) OR C eq 3";
+      const tree = treeBuilder.getExprTree(query);
+
+      expect(tree?.value).toBe("OR");
+      expect(tree?.left?.value).toBe("AND");
+      expect(tree?.right?.value).toBe("eq");
+      expect(tree?.right?.left?.value).toBe("C");
+    });
+
+    it("AST Precedence: handles 'isNull' as a unary operator", () => {
+      const query = "deletedAt isNull";
+      const tree = treeBuilder.getExprTree(query);
+      
+      expect(tree?.value).toBe("isNull");
+      expect(tree?.left?.value).toBe("deletedAt");
+      expect(tree?.right).toBeNull();
+    });
+  });
+});

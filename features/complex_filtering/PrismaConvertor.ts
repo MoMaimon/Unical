@@ -6,7 +6,11 @@ export default class PrismaConvertor implements Convertor {
   // A dictionary to translate your API operators to Prisma's specific keywords
   private operatorMap: Record<string, string> = {
     eq: "equals",
+    neq: "not",
     gte: "gte",
+    lte: "lte",
+    gt: "gt",
+    lt: "lt",
     like: "contains",
     in: "in",
   };
@@ -17,14 +21,14 @@ export default class PrismaConvertor implements Convertor {
     let value = command.value;
 
     // --- Data Cleanup ---
-    // 1. Handle arrays (e.g. "['CS', 'SE']" -> ["CS", "SE"])
+    // Handle arrays (e.g. "['CS', 'SE']" -> ["CS", "SE"])
     if (operator === "in" && typeof value === "string") {
       value = value
         .replace(/[\[\]']/g, "")
         .split(",")
         .map((s) => s.trim()) as any;
     }
-    // 2. Strip surrounding single quotes from strings (e.g. "'Dr. Smith'" -> "Dr. Smith")
+    // Strip surrounding single quotes from strings (e.g. "'Dr. Smith'" -> "Dr. Smith")
     else if (typeof value === "string" && value.startsWith("'") && value.endsWith("'")) {
       value = value.slice(1, -1) as any;
     }
@@ -32,7 +36,7 @@ export default class PrismaConvertor implements Convertor {
     // --- Prisma Mapping ---
     const prismaOperator = this.operatorMap[operator] || operator;
 
-    // 3. Strip SQL wildcard '%' for 'contains' because Prisma does that automatically
+    // Strip SQL wildcard '%' for 'contains' because Prisma does that automatically
     if (prismaOperator === "contains" && typeof value === "string") {
       value = value.replace(/%/g, "") as any;
     }

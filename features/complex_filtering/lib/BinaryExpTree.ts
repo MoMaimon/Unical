@@ -53,10 +53,15 @@ class Stack<T> {
 export class ExprTree {
   private precedence: Record<string, number> = {
     isNotNull: 4,
+    isNull: 4,
     in: 3,
     like: 3,
     gte: 3,
+    lte: 3,
+    gt: 3,
+    lt: 3,
     eq: 3,
+    neq: 3,
     AND: 2,
     OR: 1,
   };
@@ -127,7 +132,8 @@ export class ExprTree {
   }
 
   tokenize(expression: string) {
-    const regex = /\[.*?\]|'.*?'|\(|\)|[A-Za-z0-9_.]+/g;
+    const regex =
+      /\[.*?\]|'(?:\\'|[^'])*'|\(|\)|-?[A-Za-z0-9_.\u00C0-\u024F\u0600-\u06FF]+/g;
     return expression.match(regex) || [];
   }
 }
