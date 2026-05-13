@@ -6,24 +6,38 @@ export interface Mapper {
 }
 
 export const CourseMapper: Mapper = class {
-  static dictionary = {
+  static dictionary: Record<string, { dbField: string; type: string }> = {
     code: { dbField: "courseCode", type: "string" },
+    arabicName: { dbField: "arabicName", type: "string" },
+    englishName: { dbField: "englishName", type: "string" },
     credits: { dbField: "creditHours", type: "number" },
+
+    department: { dbField: "department.englishName", type: "string" },
+    lecturer: { dbField: "sections.lecturer.name", type: "string" },
+    isOnline: { dbField: "sections.times.isOnline", type: "boolean" },
   };
 
-  static translate(command: Command): string[] {
-    let val: any = (command as any).value;
-    
-    if (val === 'true') {
-      val = true;
-    } else if (val === 'false') {
-      val = false;
-    } else if (val !== null && val !== undefined && typeof val === 'string' && val.trim() !== '') {
-      if (!isNaN(Number(val))) {
+  static translate(command: Command): any[] {
+    const mapRule = this.dictionary[command.property];
+    if (!mapRule) {
+      throw new Error(`Invalid filter property: ${command.property}`);
+    }
+
+    command.property = mapRule.dbField;
+    let val: any = command.value;
+
+    if (val !== undefined && val !== null) {
+      if (val === "true") {
+        val = true;
+      } else if (val === "false") {
+        val = false;
+      } else if (mapRule.type === "number") {
         val = Number(val);
+        if (isNaN(val))
+          throw new Error(`Property ${command.property} must be a number`);
       }
     }
-    
-    return [(command as any).property, (command as any).operator, val];
+
+    return [command.property, command.operator, val];
   }
 };

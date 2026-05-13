@@ -1,13 +1,9 @@
 export interface CourseQuery {
-    page: number;
-    limit: number;
-    filter: {
-        searchQuery?: string;
-        departmentId?: string;
-        credits?: number;
-    };
-    sort: {
-        field: string;
-        direction: "asc" | "desc";
-    }[];
+  page: number;
+  limit: number;
+  filter?: string;
+  sort?: {
+    field: string;
+    direction: "asc" | "desc";
+  }[];
 }
