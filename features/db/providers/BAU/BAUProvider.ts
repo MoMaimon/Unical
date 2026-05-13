@@ -4,7 +4,10 @@ import { prisma } from "../../utils/prisma";
 import { BAUFetchProvider } from "./BAUFetchProvider";
 import { Degree, College, Department, Course, Section } from "@/types/Data";
 import PrismaConvertor from "@/features/complex_filtering/PrismaConvertor";
-import { CourseMapper, SectionMapper } from "@/features/complex_filtering/lib/Mapper";
+import {
+  CourseMapper,
+  SectionMapper,
+} from "@/features/complex_filtering/lib/Mapper";
 import { Query, PaginatedResult } from "../../types/ProviderTypes";
 
 export class BAUProvider implements IUniversityProvider {
@@ -113,18 +116,18 @@ export class BAUProvider implements IUniversityProvider {
     this.syncSections();
   }
   syncDegrees(): void {
-    this.fetchProvider.fetchDegrees();
+    throw new Error("Function not implemented yet");
   }
   syncColleges(): void {
-    this.fetchProvider.fetchColleges();
+    throw new Error("Function not implemented yet");
   }
   syncDepartments(): void {
-    // TODO: Implement
+    throw new Error("Function not implemented yet");
   }
   syncCourses(): void {
-    // TODO: Implement
+    throw new Error("Function not implemented yet");
   }
   syncSections(): void {
-    // TODO: Implement
+    throw new Error("Function not implemented yet");
   }
 }

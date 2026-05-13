@@ -1,31 +1,23 @@
-import { getDepartments, getDepartmentsByCollege } from "@/features/scraping/server/db/repository/department_repository";
-import { syncDepartments } from "@/features/scraping/server/services/scrape_service";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
 import { NextRequest, NextResponse } from "next/server";
+
+const provider = new ProviderFactory();
+provider.createBAUProvider();
 
 export const GET = async (req: NextRequest) => {
   try {
     const searchParams = req.nextUrl.searchParams;
 
-    const collegeId = searchParams.get("college");
-    if (!collegeId) {
-      const data = await getDepartments();
-      return NextResponse.json(
-        {
-          message: "Departments fetched successfully",
-          data: data,
-        },
-        { status: 200 },
-      );
-    } else {
-      const data = await getDepartmentsByCollege(collegeId);
-      return NextResponse.json(
-        {
-          message: "Departments fetched successfully",
-          data: data,
-        },
-        { status: 200 },
-      );
-    }
+    const collegeId = searchParams.get("college") || undefined;
+
+    const data = await provider.getDepartments(collegeId);
+    return NextResponse.json(
+      {
+        message: "Departments fetched successfully",
+        data: data,
+      },
+      { status: 200 },
+    );
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -39,7 +31,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    await syncDepartments();
+    await provider.syncDepartments();
     return NextResponse.json(
       {
         message: "Departments synced successfully.",

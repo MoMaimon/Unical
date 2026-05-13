@@ -1,10 +1,9 @@
-import {
-  getCollegeFilter,
-  getDepartmentFilter,
-  getSectionsPage,
-} from "@/features/scraping/server/db/repository/section_repository";
-import { syncSections } from "@/features/scraping/server/services/scrape_service";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
+import { Query } from "@/features/db/types/ProviderTypes";
 import { NextRequest, NextResponse } from "next/server";
+
+const provider = new ProviderFactory();
+provider.createBAUProvider();
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -12,37 +11,22 @@ export const GET = async (req: NextRequest) => {
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const filter = searchParams.get("filter") || undefined;
+    const sort = undefined; // TODO
 
-    const filter: Record<string, any> = {};
+    const query: Query = {
+      page: page,
+      limit: limit,
+      filter: filter,
+      sort: sort,
+    };
 
-    const collegeId = searchParams.get("college");
-    if (collegeId) {
-      const coursesIds = await getCollegeFilter(collegeId);
-      filter.courseNo = { $in: coursesIds };
-    }
-
-    const departmentId = searchParams.get("department");
-    if (departmentId) {
-      const coursesIds = await getDepartmentFilter(departmentId);
-      filter.courseNo = { $in: coursesIds };
-    }
-
-    const courseId = searchParams.get("course");
-    if (courseId) {
-      filter.courseNo = courseId;
-    }
-
-    const sections = await getSectionsPage({ page, limit, filter });
+    const sections = await provider.getSections(query);
 
     return NextResponse.json(
       {
         message: "Sections fetched successfully",
         data: sections,
-        meta: {
-          page,
-          limit,
-          returnedCount: sections.length,
-        },
       },
       { status: 200 },
     );
@@ -56,17 +40,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    const searchParams = req.nextUrl.searchParams;
-
-    const collegeId = searchParams.get("college");
-    if (!collegeId) {
-      return NextResponse.json(
-        { message: 'Missing "college" Param' },
-        { status: 400 },
-      );
-    }
-
-    await syncSections(collegeId);
+    await provider.syncSections();
 
     return NextResponse.json(
       { message: "Sections synced successfully." },

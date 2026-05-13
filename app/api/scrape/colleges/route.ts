@@ -1,11 +1,12 @@
-
-import { getColleges } from "@/features/scraping/server/db/repository/college_repository";
-import { syncColleges } from "@/features/scraping/server/services/scrape_service";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
 import { NextRequest, NextResponse } from "next/server";
+
+const provider = new ProviderFactory();
+provider.createBAUProvider();
 
 export const GET = async (req: NextRequest) => {
   try {
-    const data = await getColleges();
+    const data = provider.getColleges();
 
     return NextResponse.json(
       {
@@ -27,7 +28,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    await syncColleges();
+    await provider.syncColleges();
 
     return NextResponse.json(
       {

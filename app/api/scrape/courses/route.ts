@@ -1,6 +1,9 @@
-import { getCoursesPage } from "@/features/scraping/server/db/repository/course_repository";
-import { syncCourses } from "@/features/scraping/server/services/scrape_service";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
+import { Query } from "@/features/db/types/ProviderTypes";
 import { NextRequest, NextResponse } from "next/server";
+
+const provider = new ProviderFactory();
+provider.createBAUProvider();
 
 export const GET = async (req: NextRequest) => {
   try {
@@ -8,30 +11,22 @@ export const GET = async (req: NextRequest) => {
 
     const page = parseInt(searchParams.get("page") || "1", 10);
     const limit = parseInt(searchParams.get("limit") || "20", 10);
+    const filter = searchParams.get("filter") || undefined;
+    const sort = undefined; // TODO
 
-    const filter: Record<string, any> = {};
+    const query: Query = {
+      page: page,
+      limit: limit,
+      filter: filter,
+      sort: sort,
+    };
 
-    const collegeId = searchParams.get("college");
-    if (collegeId) {
-      filter.college = collegeId;
-    }
-
-    const departmentId = searchParams.get("department");
-    if (departmentId) {
-      filter.department = departmentId;
-    }
-
-    const courses = await getCoursesPage({ page, limit, filter });
+    const courses = await provider.getCourses(query);
 
     return NextResponse.json(
       {
         message: "Courses fetched successfully",
         data: courses,
-        meta: {
-          page,
-          limit,
-          returnedCount: courses.length,
-        },
       },
       { status: 200 },
     );
@@ -45,17 +40,7 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   try {
-    const searchParams = req.nextUrl.searchParams;
-
-    const collegeId = searchParams.get("college");
-    if (!collegeId) {
-      return NextResponse.json(
-        { message: 'Missing "college" Param' },
-        { status: 400 },
-      );
-    }
-
-    await syncCourses(collegeId);
+    await provider.syncCourses();
 
     return NextResponse.json(
       { message: "Courses synced successfully." },
