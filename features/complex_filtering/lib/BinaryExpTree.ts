@@ -1,4 +1,4 @@
-class TreeNode {
+export class TreeNode {
   value: string;
   left: TreeNode | null;
   right: TreeNode | null;
@@ -50,7 +50,7 @@ class Stack<T> {
     console.log(this.items);
   }
 }
-export default class ExprTree {
+export class ExprTree {
   private precedence: Record<string, number> = {
     isNotNull: 4,
     in: 3,
@@ -69,13 +69,11 @@ export default class ExprTree {
     postfix.forEach((token) => {
       if (!(token in this.precedence)) {
         stack.push(new TreeNode(token));
-      }
-      else {
+      } else {
         if (token === "isNotNull") {
           const leftNode = stack.pop();
           stack.push(new TreeNode(token, leftNode));
-        }
-        else {
+        } else {
           const rightNode = stack.pop();
           const leftNode = stack.pop();
 
@@ -118,7 +116,11 @@ export default class ExprTree {
     });
 
     while (!operatorStack.isEmpty()) {
-      output.push(operatorStack.pop()!);
+      const op = operatorStack.pop();
+      if (op === "(" || op === ")") {
+        throw new Error("unbalanced parenthesis");
+      }
+      output.push(op!);
     }
 
     return output;

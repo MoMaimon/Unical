@@ -2,9 +2,9 @@ import Convertor from "./Convertor";
 import { Mapper } from "./lib/Mapper";
 
 export default class Command {
-  private property: string;
-  private operator: string;
-  private value: string;
+  public property: string;
+  public operator: string;
+  public value: string;
 
   constructor(property: string, operator: string, value: string) {
     this.property = property;
