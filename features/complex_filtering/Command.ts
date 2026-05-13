@@ -1,4 +1,5 @@
 import Convertor from "./Convertor";
+import { Mapper } from "./lib/Mapper";
 
 export default class Command {
   private property: string;
@@ -11,7 +12,12 @@ export default class Command {
     this.value = value;
   }
 
-  accept(convertot: Convertor) {
-    throw new Error("Method not implemented.");
+  accept(convertor: Convertor, mapper: Mapper) {
+    [this.property, this.operator, this.value] = mapper.translate(this);
+    if (this.value === null || this.value === undefined) {
+      return convertor.doForCommandWithoutValue(this);
+    } else {
+      return convertor.doForCommandWithValue(this);
+    }
   }
 }
