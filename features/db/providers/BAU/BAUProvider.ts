@@ -1,12 +1,11 @@
 import TokenStrategy from "@/features/complex_filtering/TokenStrategy";
 import { IUniversityProvider } from "../../IUniversityProvider";
-import { CourseQuery } from "../../types/CourseQuery";
-import { PaginatedResult } from "../../types/PaginatedResult";
 import { prisma } from "../../utils/prisma";
 import { BAUFetchProvider } from "./BAUFetchProvider";
 import { Degree, College, Department, Course, Section } from "@/types/Data";
 import PrismaConvertor from "@/features/complex_filtering/PrismaConvertor";
-import { CourseMapper } from "@/features/complex_filtering/lib/Mapper";
+import { CourseMapper, SectionMapper } from "@/features/complex_filtering/lib/Mapper";
+import { Query, PaginatedResult } from "../../types/ProviderTypes";
 
 export class BAUProvider implements IUniversityProvider {
   constructor(private fetchProvider: BAUFetchProvider) {}
@@ -25,7 +24,7 @@ export class BAUProvider implements IUniversityProvider {
       },
     });
   }
-  async getCourses(query?: CourseQuery): Promise<PaginatedResult<Course>> {
+  async getCourses(query?: Query): Promise<PaginatedResult<Course>> {
     const page = query?.page || 1;
     const limit = query?.limit || 10;
     const skip = (page - 1) * limit;
@@ -59,13 +58,50 @@ export class BAUProvider implements IUniversityProvider {
     ]);
 
     return {
-      data: data as any, 
+      data: data as any,
       totalCount: totalCount,
       totalPages: Math.ceil(totalCount / limit),
     };
   }
-  async getSections(courseId: string): Promise<Section[]> {
-    throw new Error("Method not implemented.");
+  async getSections(query?: Query): Promise<PaginatedResult<Section>> {
+    const page = query?.page || 1;
+    const limit = query?.limit || 10;
+    const skip = (page - 1) * limit;
+
+    let whereParams = {};
+
+    if (query?.filter) {
+      const strategy = new TokenStrategy();
+      const convertor = new PrismaConvertor();
+
+      const filterObj = strategy.parse(convertor, query.filter, SectionMapper);
+      whereParams = filterObj.whereParams;
+    }
+
+    const orderBy = query?.sort?.map((s) => ({ [s.field]: s.direction })) || [];
+
+    const [data, totalCount] = await prisma.$transaction([
+      prisma.sections.findMany({
+        where: whereParams,
+        skip: skip,
+        take: limit,
+        orderBy: orderBy,
+        include: {
+          course: true,
+          lecturer: true,
+          times: true,
+        },
+      }),
+      prisma.sections.count({
+        where: whereParams,
+      }),
+    ]);
+
+    return {
+      data: data as any,
+      totalCount: totalCount,
+      totalPages: Math.ceil(totalCount / limit),
+    };
   }
 
   // sync methods

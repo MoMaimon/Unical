@@ -41,3 +41,39 @@ export const CourseMapper: Mapper = class {
     return [command.property, command.operator, val];
   }
 };
+
+export const SectionMapper: Mapper = class {
+  static dictionary: Record<string, { dbField: string; type: string }> = {
+    lecturer: { dbField: "lecturer.name", type: "string" },
+    courseCode: { dbField: "course.courseCode", type: "string" },
+    courseArabicName: { dbField: "course.arabicName", type: "string" },
+    courseEnglishName: { dbField: "course.englishName", type: "string" },
+    isOnline: { dbField: "times.isOnline", type: "boolean" },
+    room: { dbField: "times.room", type: "string" },
+    days: { dbField: "times.days", type: "number" },
+  };
+
+  static translate(command: Command): any[] {
+    const mapRule = this.dictionary[command.property];
+    if (!mapRule) {
+      throw new Error(`Invalid filter property: ${command.property}`);
+    }
+
+    command.property = mapRule.dbField;
+    let val: any = command.value;
+
+    if (val !== undefined && val !== null) {
+      if (val === "true") {
+        val = true;
+      } else if (val === "false") {
+        val = false;
+      } else if (mapRule.type === "number") {
+        val = Number(val);
+        if (isNaN(val))
+          throw new Error(`Property ${command.property} must be a number`);
+      }
+    }
+
+    return [command.property, command.operator, val];
+  }
+};
