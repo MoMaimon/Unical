@@ -21,8 +21,7 @@ export default async function CourseList({
   sortBy: string | undefined;
   groupBy: string;
 }) {
-  const provider = new ProviderFactory();
-  provider.createBAUProvider();
+  const provider = ProviderFactory.getProvider("BAU");
 
   const locale = await getLocale();
 
@@ -46,16 +45,21 @@ export default async function CourseList({
 
   let displayData: Record<string, typeof courses> = {};
 
-  type GroupableKey = "degree" | "college" | "department";
-  const isValidGroup = (key: string): key is GroupableKey =>
-    ["degree", "college", "department"].includes(key);
-
-  if (groupBy === "none" || !isValidGroup(groupBy)) {
+  if (groupBy === "none") {
     displayData = { "All Courses": courses };
   } else {
     displayData = courses.reduce(
       (acc, course) => {
-        const groupName = course[groupBy]?.[nameField] || "Other";
+        let groupEntity: any;
+
+        if (groupBy === "college") {
+          groupEntity = (course as any).department?.college;
+        } else {
+          groupEntity = (course as any)[groupBy];
+        }
+
+        const groupName = groupEntity?.[nameField] || "Other";
+
         if (!acc[groupName]) acc[groupName] = [];
         acc[groupName].push(course);
         return acc;
@@ -88,15 +92,13 @@ export default async function CourseList({
                   <CardHeader>
                     <CardTitle>{course[nameField]}</CardTitle>
                     <CardDescription>
-                      {(course as any).department?.englishName ||
-                        (course as any).department?.name}
+                      {(course as any).department?.[nameField]}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="text-sm text-muted-foreground">
                       <li>
-                        {(course as any).degree?.englishName ||
-                          (course as any).degree?.name}
+                        {(course as any).degree?.[nameField]}
                       </li>
                       <li>{course.department?.college?.[nameField]}</li>
                     </ul>

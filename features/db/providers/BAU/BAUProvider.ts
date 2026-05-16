@@ -2,7 +2,13 @@ import TokenStrategy from "@/features/complex_filtering/TokenStrategy";
 import { IUniversityProvider } from "../../IUniversityProvider";
 import { prisma } from "../../utils/prisma";
 import { BAUFetchProvider } from "./BAUFetchProvider";
-import { Degree, College, Department, Section } from "@/types/Data";
+import {
+  Degree,
+  College,
+  Department,
+  Section,
+  SearchCourse,
+} from "@/types/Data";
 import PrismaConvertor from "@/features/complex_filtering/PrismaConvertor";
 import {
   CourseMapper,
@@ -113,6 +119,37 @@ export class BAUProvider implements IUniversityProvider {
       totalCount: totalCount,
       totalPages: Math.ceil(totalCount / limit),
     };
+  }
+  async searchCourses(searchTerm: string): Promise<SearchCourse> {
+    const threshold = 0.1;
+    const limit = 10;
+
+    const courses = await prisma.$queryRaw`
+      SELECT 
+        id, 
+        "courseCode", 
+        "englishName", 
+        "arabicName", 
+        "creditHours",
+        GREATEST(
+          similarity("englishName", ${searchTerm}), 
+          similarity("arabicName", ${searchTerm})
+        ) as sml
+      FROM "Courses"
+      WHERE 
+        similarity("englishName", ${searchTerm}) > ${threshold}
+        OR similarity("arabicName", ${searchTerm}) > ${threshold}
+        
+        OR "englishName" ILIKE ${"%" + searchTerm + "%"}
+        OR "arabicName" ILIKE ${"%" + searchTerm + "%"}
+        OR "courseCode" ILIKE ${"%" + searchTerm + "%"}
+        
+      ORDER BY 
+        sml DESC,
+        "englishName" ASC
+      LIMIT ${limit};
+    `;
+    return courses as SearchCourse;
   }
 
   // sync methods

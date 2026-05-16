@@ -5,8 +5,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 async function CollegeList() {
-  const provider = new ProviderFactory();
-  provider.createBAUProvider();
+  const provider = ProviderFactory.getProvider()
   const data = await provider.getColleges();
 
   if (!data || data.length === 0) {
