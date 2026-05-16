@@ -6,7 +6,7 @@ provider.createBAUProvider();
 
 export const GET = async (req: NextRequest) => {
   try {
-    const data = provider.getColleges();
+    const data = await provider.getColleges();
 
     return NextResponse.json(
       {
