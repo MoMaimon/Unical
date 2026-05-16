@@ -10,6 +10,7 @@ export interface College extends Data { }
 
 export interface Department extends Data {
     collegeId: string;
+    college?: College;
 }
 
 export interface Course {
@@ -19,6 +20,10 @@ export interface Course {
     degreeId: string;
     departmentId: string;
     creditHours: number;
+
+    degree?: Degree;
+    department?: Department;
+    college?: College;
 }
 
 export interface Section {

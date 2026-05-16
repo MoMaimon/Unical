@@ -2,13 +2,17 @@ import TokenStrategy from "@/features/complex_filtering/TokenStrategy";
 import { IUniversityProvider } from "../../IUniversityProvider";
 import { prisma } from "../../utils/prisma";
 import { BAUFetchProvider } from "./BAUFetchProvider";
-import { Degree, College, Department, Course, Section } from "@/types/Data";
+import { Degree, College, Department, Section } from "@/types/Data";
 import PrismaConvertor from "@/features/complex_filtering/PrismaConvertor";
 import {
   CourseMapper,
   SectionMapper,
 } from "@/features/complex_filtering/lib/Mapper";
-import { Query, PaginatedResult } from "../../types/ProviderTypes";
+import {
+  Query,
+  PaginatedResult,
+  PopulatedCourse,
+} from "../../types/ProviderTypes";
 
 export class BAUProvider implements IUniversityProvider {
   constructor(private fetchProvider: BAUFetchProvider) {}
@@ -27,7 +31,7 @@ export class BAUProvider implements IUniversityProvider {
       },
     });
   }
-  async getCourses(query?: Query): Promise<PaginatedResult<Course>> {
+  async getCourses(query?: Query): Promise<PaginatedResult<PopulatedCourse>> {
     const page = query?.page || 1;
     const limit = query?.limit || 10;
     const skip = (page - 1) * limit;
@@ -51,8 +55,12 @@ export class BAUProvider implements IUniversityProvider {
         take: limit,
         orderBy: orderBy,
         include: {
-          department: true,
           degree: true,
+          department: {
+            include: {
+              college: true,
+            },
+          },
         },
       }),
       prisma.courses.count({

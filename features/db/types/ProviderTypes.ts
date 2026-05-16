@@ -1,3 +1,5 @@
+import { Prisma } from "@/generated/prisma/client";
+
 export interface PaginatedResult<T> {
   data: T[];
   totalCount: number;
@@ -13,3 +15,14 @@ export interface Query {
     direction: "asc" | "desc";
   }[];
 }
+
+export type PopulatedCourse = Prisma.CoursesGetPayload<{
+  include: {
+    degree: true;
+    department: {
+      include: {
+        college: true;
+      }
+    };
+  }
+}>;

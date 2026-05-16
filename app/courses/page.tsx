@@ -1,12 +1,12 @@
 import CourseList from "@/components/course-list";
-import ActiveFilters from "@/components/search_components/active-filters";
-import Filter from "@/components/search_components/filter";
+import NewActiveFilters from "@/components/search_components/new-active-filters";
+import NewFilterBar from "@/components/search_components/new-filter-bar";
 import Group from "@/components/search_components/group";
 import Sort from "@/components/search_components/sort";
-import { getCollegesCached } from "@/features/scraping/server/db/repository/college_repository";
-import { getDegreesCashed } from "@/features/scraping/server/db/repository/degree_repository";
-import { getDepartmentsCashed } from "@/features/scraping/server/db/repository/department_repository";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
 import { Suspense } from "react";
+import { filterConfig, getPopulatedFilters } from "@/lib/filterConfig";
+import { logger } from "@/lib/utils/logger";
 
 function CourseListSkeleton() {
   return (
@@ -24,32 +24,40 @@ export default async function Courses({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
+  const provider = new ProviderFactory();
+  provider.createBAUProvider();
+
   const params = await searchParams;
 
-  const filter = params.filter;
   const sortBy = params.sort;
   const groupBy = params.group || "none";
   const page = params.page || 1;
 
   const [degrees, colleges, departments] = await Promise.all([
-    getDegreesCashed(),
-    getCollegesCached(),
-    getDepartmentsCashed(),
+    provider.getDegrees(),
+    provider.getColleges(),
+    provider.getDepartments(),
   ]);
 
-  let dbFilter: Record<string, any> = {};
-  if (filter) {
-    try {
-      dbFilter = JSON.parse(Buffer.from(filter, "base64").toString("utf-8"));
-    } catch (e) {
-      console.error("Failed to parse filter URL parameter");
-    }
-  }
+  const populatedFilters = getPopulatedFilters(degrees, colleges, departments);
 
+  const filterConditions: string[] = [];
+  filterConfig.forEach((filter) => {
+    const value = params[filter.id];
+    if (value) {
+      const valuesArray = value.split(",").map((v) => `'${v}'`);
+      filterConditions.push(`(${filter.id} in [${valuesArray.join(", ")}])`);
+    }
+  });
+
+  const dbFilterString =
+    filterConditions.length > 0 ? filterConditions.join(" AND ") : undefined;
+
+  logger.info(dbFilterString);
   const dbParams = {
     page: Number(page),
     limit: 24,
-    filter: dbFilter,
+    filter: dbFilterString,
   };
 
   const suspenseKey = JSON.stringify(params);
@@ -57,25 +65,20 @@ export default async function Courses({
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-col justify-between gap-5 mb-5">
-        <div className="flex justify-between">
-          <Filter
-            colleges={colleges}
-            degrees={degrees}
-            departments={departments}
-          />
-          <div className="flex gap-5">
-            <Suspense fallback={<div>Loading</div>}>
+        <div className="flex flex-col md:flex-row justify-between gap-4">
+          <NewFilterBar filters={populatedFilters} />
+          <div className="flex gap-3">
+            <Suspense
+              fallback={
+                <div className="w-24 h-9 bg-muted animate-pulse rounded-md" />
+              }
+            >
               <Sort options={["name", "hours"]} />
-              <Group options={["degree","college","department"]}/>
+              <Group options={["degree", "college", "department"]} />
             </Suspense>
-            
           </div>
         </div>
-        <ActiveFilters
-          colleges={colleges}
-          degrees={degrees}
-          departments={departments}
-        />
+        <NewActiveFilters filters={populatedFilters} />
       </div>
 
       <Suspense key={suspenseKey} fallback={<CourseListSkeleton />}>

@@ -1,13 +1,12 @@
-import { CourseQuery } from "./types/CourseQuery";
-import { PaginatedResult } from "./types/PaginatedResult";
-import { College, Degree, Department, Course, Section } from "@/types/Data";
+import { College, Degree, Department, Section } from "@/types/Data";
+import { PaginatedResult, PopulatedCourse, Query } from "./types/ProviderTypes";
 
 export interface IUniversityProvider {
   getDegrees(): Promise<Degree[]>;
   getColleges(): Promise<College[]>;
   getDepartments(collegeId?: string): Promise<Department[]>;
-  getCourses(query?: CourseQuery): Promise<PaginatedResult<Course>>;
-  getSections(query?: CourseQuery): Promise<PaginatedResult<Section>>;
+  getCourses(query?: Query): Promise<PaginatedResult<PopulatedCourse>>;
+  getSections(query?: Query): Promise<PaginatedResult<Section>>;
 
   //sync methods
   syncAll(): void;

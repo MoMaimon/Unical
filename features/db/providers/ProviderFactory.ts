@@ -1,8 +1,12 @@
 import { IUniversityProvider } from "../IUniversityProvider";
-import { PaginatedResult, Query } from "../types/ProviderTypes";
+import {
+  PaginatedResult,
+  PopulatedCourse,
+  Query,
+} from "../types/ProviderTypes";
 import { BAUFetchProvider } from "./BAU/BAUFetchProvider";
 import { BAUProvider } from "./BAU/BAUProvider";
-import { College, Course, Department, Degree, Section } from "@/types/Data";
+import { College, Department, Degree, Section } from "@/types/Data";
 
 export class ProviderFactory implements IUniversityProvider {
   private provider?: IUniversityProvider;
@@ -24,7 +28,7 @@ export class ProviderFactory implements IUniversityProvider {
     if (!this.provider) throw new Error("Provider not initialized");
     return this.provider.getDepartments(collegeId);
   }
-  getCourses(query?: Query): Promise<PaginatedResult<Course>> {
+  getCourses(query?: Query): Promise<PaginatedResult<PopulatedCourse>> {
     if (!this.provider) throw new Error("Provider not initialized");
     return this.provider.getCourses(query);
   }

@@ -15,6 +15,10 @@ export const CourseMapper: Mapper = class {
     department: { dbField: "department.englishName", type: "string" },
     lecturer: { dbField: "sections.lecturer.name", type: "string" },
     isOnline: { dbField: "sections.times.isOnline", type: "boolean" },
+
+    degreeId: { dbField: "degreeId", type: "string" },
+    departmentId: { dbField: "departmentId", type: "string" },
+    collegeId: { dbField: "department.collegeId", type: "string" },
   };
 
   static translate(command: Command): any[] {
