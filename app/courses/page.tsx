@@ -24,8 +24,7 @@ export default async function Courses({
 }: {
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const provider = new ProviderFactory();
-  provider.createBAUProvider();
+  const provider = ProviderFactory.getProvider("BAU");
 
   const params = await searchParams;
 

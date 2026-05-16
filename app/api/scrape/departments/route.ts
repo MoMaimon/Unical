@@ -1,8 +1,7 @@
 import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
 import { NextRequest, NextResponse } from "next/server";
 
-const provider = new ProviderFactory();
-provider.createBAUProvider();
+const provider = ProviderFactory.getProvider("BAU");
 
 export const GET = async (req: NextRequest) => {
   try {
