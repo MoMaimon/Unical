@@ -13,7 +13,7 @@ export interface IUniversityProvider {
   getDepartments(collegeId?: string): Promise<Department[]>;
   getCourses(query?: Query): Promise<PaginatedResult<PopulatedCourse>>;
   getSections(query?: Query): Promise<PaginatedResult<Section>>;
-  searchCourses(searchTerm: string): Promise<SearchCourse>;
+  searchCourses(searchTerm: string): Promise<SearchCourse[]>;
 
   //sync methods
   syncAll(): void;

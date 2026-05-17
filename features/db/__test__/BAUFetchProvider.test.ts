@@ -1,6 +1,6 @@
 import { describe, beforeEach, it, expect, vi, afterEach } from 'vitest';
-import { BAUFetchProvider } from './BAUFetchProvider';
 import { logger } from '@/lib/utils/logger';
+import { BAUFetchProvider } from '../providers/BAU/BAUFetchProvider';
 
 // Mock the logger to prevent expected errors from polluting the test output
 vi.mock('@/lib/utils/logger', () => ({

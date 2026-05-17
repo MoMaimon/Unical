@@ -19,23 +19,44 @@ import {
   PaginatedResult,
   PopulatedCourse,
 } from "../../types/ProviderTypes";
+import { cacheTag } from "next/cache";
+
+async function getCachedDegrees(): Promise<Degree[]> {
+  "use cache";
+  cacheTag("degree", "data");
+  return await prisma.degrees.findMany();
+}
+
+async function getCachedColleges(): Promise<College[]> {
+  "use cache";
+  cacheTag("college", "data");
+  return await prisma.colleges.findMany();
+}
+
+async function getCachedDepartments(
+  collegeId?: string | undefined,
+): Promise<Department[]> {
+  "use cache";
+  cacheTag("departments", "data");
+  return await prisma.departments.findMany({
+    where: {
+      collegeId: collegeId,
+    },
+  });
+}
 
 export class BAUProvider implements IUniversityProvider {
   constructor(private fetchProvider: BAUFetchProvider) {}
 
   // read methods
   async getDegrees(): Promise<Degree[]> {
-    return await prisma.degrees.findMany();
+    return await getCachedDegrees();
   }
   async getColleges(): Promise<College[]> {
-    return await prisma.colleges.findMany();
+    return await getCachedColleges();
   }
   async getDepartments(collegeId?: string | undefined): Promise<Department[]> {
-    return await prisma.departments.findMany({
-      where: {
-        collegeId: collegeId,
-      },
-    });
+    return getCachedDepartments(collegeId);
   }
   async getCourses(query?: Query): Promise<PaginatedResult<PopulatedCourse>> {
     const page = query?.page || 1;
@@ -120,10 +141,8 @@ export class BAUProvider implements IUniversityProvider {
       totalPages: Math.ceil(totalCount / limit),
     };
   }
-  async searchCourses(searchTerm: string): Promise<SearchCourse> {
-    const threshold = 0.1;
-    const limit = 10;
-
+  async searchCourses(searchTerm: string): Promise<SearchCourse[]> {
+    // 1. Notice the [] here
     const courses = await prisma.$queryRaw`
       SELECT 
         id, 
@@ -137,8 +156,9 @@ export class BAUProvider implements IUniversityProvider {
         ) as sml
       FROM "Courses"
       WHERE 
-        similarity("englishName", ${searchTerm}) > ${threshold}
-        OR similarity("arabicName", ${searchTerm}) > ${threshold}
+        -- 2. Hardcode the 0.1 threshold to avoid Postgres type-casting errors
+        similarity("englishName", ${searchTerm}) > 0.1
+        OR similarity("arabicName", ${searchTerm}) > 0.1
         
         OR "englishName" ILIKE ${"%" + searchTerm + "%"}
         OR "arabicName" ILIKE ${"%" + searchTerm + "%"}
@@ -147,9 +167,12 @@ export class BAUProvider implements IUniversityProvider {
       ORDER BY 
         sml DESC,
         "englishName" ASC
-      LIMIT ${limit};
+      -- 3. Hardcode the limit 
+      LIMIT 10;
     `;
-    return courses as SearchCourse;
+
+    // 4. Cast it as an array
+    return courses as SearchCourse[];
   }
 
   // sync methods

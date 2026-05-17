@@ -78,11 +78,8 @@ export function SearchBar({ className }: { className: string }) {
           <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-thin scrollbar-thumb-gray-300">
             {results.length > 0 ? (
               results.map((course: SearchCourse) => (
-                <Link href={`/courses/${course.id}`}>
-                  <div
-                    key={course.id}
-                    className="group flex flex-col p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border-b border-gray-50 last:border-0"
-                  >
+                <Link key={course.id} href={`/courses/${course.id}`}>
+                  <div className="group flex flex-col p-3 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer border-b border-gray-50 last:border-0">
                     <div className="flex justify-between items-start">
                       <p className="font-semibold text-gray-900 group-hover:text-primary transition-colors">
                         {course.englishName}
@@ -103,7 +100,6 @@ export function SearchBar({ className }: { className: string }) {
                 </Link>
               ))
             ) : (
-              
               <div className="p-8 text-center flex flex-col items-center justify-center text-gray-500">
                 <Search className="h-8 w-8 text-gray-300 mb-3" />
                 <p className="font-medium text-gray-900">No courses found</p>

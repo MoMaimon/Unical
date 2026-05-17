@@ -1,7 +1,10 @@
 import { describe, beforeEach, it, expect, vi, Mocked } from 'vitest';
-import { BAUProvider } from './BAUProvider';
-import { BAUFetchProvider } from './BAUFetchProvider';
+import { BAUFetchProvider } from '../providers/BAU/BAUFetchProvider';
+import { BAUProvider } from '../providers/BAU/BAUProvider';
 
+
+
+// test are not reliable currently
 describe('BAUProvider', () => {
     let provider: BAUProvider;
     let fetchProviderMock: Mocked<BAUFetchProvider>;
@@ -37,7 +40,7 @@ describe('BAUProvider', () => {
         });
 
         it('getSections should throw not implemented', async () => {
-            await expect(provider.getSections('testId')).rejects.toThrow("Method not implemented.");
+            await expect(provider.getSections()).rejects.toThrow("Method not implemented.");
         });
     });
 

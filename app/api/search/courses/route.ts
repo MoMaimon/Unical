@@ -5,14 +5,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const searchTerm = searchParams.get("q");
 
-  const provider = ProviderFactory.getProvider("BAU");
-
   if (!searchTerm) {
     return NextResponse.json([]);
   }
 
   try {
-    const courses = provider.searchCourses(searchTerm);
+    // Use your factory to get the provider, then call the new method
+    const provider = ProviderFactory.getProvider("BAU");
+    const courses = await provider.searchCourses(searchTerm);
 
     return NextResponse.json(courses);
   } catch (error) {
