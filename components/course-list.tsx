@@ -11,6 +11,7 @@ import Pages from "./search_components/pagination";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
+import Link from "next/link";
 
 export default async function CourseList({
   dbParams,
@@ -97,9 +98,7 @@ export default async function CourseList({
                   </CardHeader>
                   <CardContent>
                     <ul className="text-sm text-muted-foreground">
-                      <li>
-                        {(course as any).degree?.[nameField]}
-                      </li>
+                      <li>{(course as any).degree?.[nameField]}</li>
                       <li>{course.department?.college?.[nameField]}</li>
                     </ul>
                   </CardContent>
@@ -107,7 +106,9 @@ export default async function CourseList({
                     <Badge variant="outline">
                       {course.creditHours} Credit Hours
                     </Badge>
-                    <Button>View Sections</Button>
+                    <Link href={`courses/${course.id}`}>
+                      <Button>View Sections</Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               ))}

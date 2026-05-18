@@ -63,6 +63,8 @@ model Sections {
   id         String   @id @default(cuid())
   course     Courses  @relation(fields: [courseId], references: [id])
   lecturer   Lecturer @relation(fields: [lecturerId], references: [id])
+  status     Int      @default(1)
+  sectionNo  Int      
   courseId   String
   lecturerId String
   times      Times[]
