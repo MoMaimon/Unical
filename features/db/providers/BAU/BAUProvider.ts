@@ -18,6 +18,7 @@ import {
   Query,
   PaginatedResult,
   PopulatedCourse,
+  PopulatedCourseWithSections,
 } from "../../types/ProviderTypes";
 import { cacheTag } from "next/cache";
 
@@ -100,6 +101,30 @@ export class BAUProvider implements IUniversityProvider {
       totalCount: totalCount,
       totalPages: Math.ceil(totalCount / limit),
     };
+  }
+  async getCourseById(
+    courseId: string,
+  ): Promise<PopulatedCourseWithSections | null> {
+    const course = await prisma.courses.findUnique({
+      where: {
+        id: courseId,
+      },
+      include: {
+        degree: true,
+        department: {
+          include: {
+            college: true,
+          },
+        },
+        sections: {
+          include: {
+            lecturer: true,
+            times: true,
+          },
+        },
+      },
+    });
+    return course;
   }
   async getSections(query?: Query): Promise<PaginatedResult<Section>> {
     const page = query?.page || 1;
