@@ -2,7 +2,7 @@ import { SearchBar } from "@/components/ui/SearchBar";
 import { useTranslations } from "next-intl";
 
 export default function Home() {
-  const t = useTranslations("HomePage");
+  const t = useTranslations("Home");
 
   return (
     <div className="flex flex-col flex-1 justify-center items-center w-full px-4 text-center">

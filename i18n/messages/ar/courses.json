@@ -1,0 +1,20 @@
+{
+  "Sort": {
+    "title": "ترتيب حسب",
+    "name": "الاسم",
+    "hours": "الساعات"
+  },
+  "GroupBy": {
+    "title": "تجميع حسب",
+    "none": "بدون تجميع"
+  },
+  "Filter": {
+    "title": "تصفية",
+    "filter_courses": "تصفية المقررات",
+    "active_filters": "التصفيات النشطة",
+    "options": "خيارات {data}"
+  },
+  "Actions": {
+    "show_sections": "إظهار الشعب"
+  }
+}

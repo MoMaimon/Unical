@@ -1,4 +1,5 @@
 import { College, Degree, Department } from "@/types/Data";
+import { getLocale } from "next-intl/server";
 
 export type FilterType = "multi-select" | "range" | "boolean";
 
@@ -22,25 +23,25 @@ export interface FilterConfigItem {
 export const filterConfig: FilterConfigItem[] = [
   {
     id: "degreeId",
-    label: "Degree",
+    label: "degree",
     type: "multi-select",
     dynamicOptionsKey: "degrees",
   },
   {
     id: "collegeId",
-    label: "College",
+    label: "college",
     type: "multi-select",
     dynamicOptionsKey: "colleges",
   },
   {
     id: "departmentId",
-    label: "Department",
+    label: "department",
     type: "multi-select",
     dynamicOptionsKey: "departments",
   },
   {
     id: "credits",
-    label: "Credit Hours",
+    label: "credit_hours",
     type: "range",
     options: [
       { id: "1", label: "1 Hour" },
@@ -54,18 +55,20 @@ export const filterConfig: FilterConfigItem[] = [
 ];
 
 // Helper to populate dynamic options
-export function getPopulatedFilters(
+export async function getPopulatedFilters(
   degrees: Degree[],
   colleges: College[],
   departments: Department[],
-): FilterConfigItem[] {
+): Promise<FilterConfigItem[]> {
+  const locale = await getLocale();
+  const nameField = locale === "ar" ? "arabicName" : "englishName";
   return filterConfig.map((config) => {
     if (config.dynamicOptionsKey === "degrees") {
       return {
         ...config,
         options: degrees.map((d) => ({
           id: d.id,
-          label: d.englishName || d.arabicName,
+          label: d[nameField],
         })),
       };
     }
@@ -74,7 +77,7 @@ export function getPopulatedFilters(
         ...config,
         options: colleges.map((c) => ({
           id: c.id,
-          label: c.englishName || c.arabicName,
+          label: c[nameField],
         })),
       };
     }
@@ -83,7 +86,7 @@ export function getPopulatedFilters(
         ...config,
         options: departments.map((d) => ({
           id: d.id,
-          label: d.englishName || d.arabicName,
+          label: d[nameField],
         })),
       };
     }

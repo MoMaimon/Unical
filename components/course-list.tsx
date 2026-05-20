@@ -42,7 +42,8 @@ export default async function CourseList({
 
   const courses = result.data;
   const totalPages = result.totalPages;
-  const t = await getTranslations("Courses");
+  const tCommon = await getTranslations("Entities");
+  const tCourses = await getTranslations("Courses"); 
 
   let displayData: Record<string, typeof courses> = {};
 
@@ -72,7 +73,7 @@ export default async function CourseList({
   if (courses.length === 0) {
     return (
       <div className="flex justify-center items-center flex-1 text-4xl md:text-5xl font-bold py-20 text-muted-foreground text-center">
-        {t("no_courses_found")}
+        {tCommon("no_courses_found")}
       </div>
     );
   }
@@ -104,10 +105,10 @@ export default async function CourseList({
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Badge variant="outline">
-                      {course.creditHours} Credit Hours
+                      {tCommon("credit_hours", { count: course.creditHours })}
                     </Badge>
                     <Link href={`courses/${course.id}`}>
-                      <Button>View Sections</Button>
+                      <Button>{tCourses("Actions.show_sections")}</Button>
                     </Link>
                   </CardFooter>
                 </Card>

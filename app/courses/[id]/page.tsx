@@ -2,8 +2,8 @@ import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { BookOpen,} from "lucide-react";
-import { getLocale } from "next-intl/server";
+import { BookOpen } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 import SectionList from "./SectionList";
 
 export default async function page({
@@ -15,11 +15,12 @@ export default async function page({
   const provider = ProviderFactory.getProvider("BAU");
   const course = await provider.getCourseById(id);
   const locale = await getLocale();
+  const t = await getTranslations("Entities");
 
   if (!course) {
     notFound();
   }
-  
+
   const sections = course.sections ?? [];
   const nameField = locale === "ar" ? "arabicName" : "englishName";
   return (
@@ -34,7 +35,9 @@ export default async function page({
           {course[nameField]}
         </h1>
         <div className="flex flex-wrap gap-2 pt-2">
-          <Badge variant="secondary">{course.creditHours} Credit Hours</Badge>
+          <Badge variant="secondary">
+            {t("credit_hours", { count: course.creditHours })}
+          </Badge>
           {course.degree && (
             <Badge variant="outline">{course.degree[nameField]}</Badge>
           )}
@@ -55,17 +58,17 @@ export default async function page({
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold">
-            Sections&nbsp;
-            <span className="ml-2 text-base font-normal text-muted-foreground">
+            {t("section", { count: sections.length })}
+            {/* <span className="ml-2 text-base font-normal text-muted-foreground">
               ({sections.length})
-            </span>
+            </span> */}
           </h2>
         </div>
 
         {sections.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-muted-foreground gap-2">
             <BookOpen className="h-10 w-10 opacity-30" />
-            <p className="text-sm">No sections available for this course.</p>
+            <p className="text-sm">{t("section", { count: 0 })}</p>
           </div>
         ) : (
           <SectionList sections={sections} />

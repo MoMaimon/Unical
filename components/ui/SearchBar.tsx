@@ -12,7 +12,7 @@ export function SearchBar({ className }: { className: string }) {
   const [results, setResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const t = useTranslations("NavBar");
+  const t = useTranslations();
   const locale = useLocale();
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export function SearchBar({ className }: { className: string }) {
     >
       <InputGroup>
         <InputGroupInput
-          placeholder={`${t("search")}...`}
+          placeholder={`${t("Actions.search")}...`}
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}
         />

@@ -1,8 +1,15 @@
-import en from './i18n/messages/en.json';
+import common from "./i18n/messages/en/common.json";
+import layout from "./i18n/messages/en/layout.json";
+import courses from "./i18n/messages/en/courses.json";
+import home from "./i18n/messages/en/home.json";
 
-type Messages = typeof en;
+type Messages = {
+  Common: typeof common;
+  Layout: typeof layout;
+  Courses: typeof courses;
+  Home: typeof home;
+};
 
 declare global {
-  // Use type safe message keys with `next-intl`
   interface IntlMessages extends Messages {}
 }

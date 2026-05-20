@@ -13,9 +13,15 @@ interface NewActiveFiltersProps {
 export default function NewActiveFilters({ filters }: NewActiveFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const t = useTranslations("Courses.Filter");
+  const tFilter = useTranslations("Courses.Filter");
+  const tCommon = useTranslations();
 
-  const activeFilters: { filterId: string; filterLabel: string; optionId: string; optionLabel: string }[] = [];
+  const activeFilters: {
+    filterId: string;
+    filterLabel: string;
+    optionId: string;
+    optionLabel: string;
+  }[] = [];
 
   filters.forEach((filter) => {
     const values = searchParams.get(filter.id)?.split(",") || [];
@@ -44,7 +50,7 @@ export default function NewActiveFilters({ filters }: NewActiveFiltersProps) {
     } else {
       params.delete(filterId);
     }
-    
+
     // Reset pagination
     params.set("page", "1");
     router.push(`?${params.toString()}`);
@@ -52,7 +58,7 @@ export default function NewActiveFilters({ filters }: NewActiveFiltersProps) {
 
   const clearAll = () => {
     const params = new URLSearchParams(searchParams.toString());
-    filters.forEach(f => params.delete(f.id));
+    filters.forEach((f) => params.delete(f.id));
     params.set("page", "1");
     router.push(`?${params.toString()}`);
   };
@@ -60,28 +66,32 @@ export default function NewActiveFilters({ filters }: NewActiveFiltersProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 mb-6">
       <span className="text-sm font-medium text-muted-foreground mr-2">
-        {t("active_filters") || "Active Filters"}:
+        {tFilter("active_filters") || "Active Filters"}:
       </span>
 
-      {activeFilters.map(({ filterId, filterLabel, optionId, optionLabel }, index) => (
-        <Badge
-          key={`${filterId}-${optionId}-${index}`}
-          variant="secondary"
-          className="px-3 py-1.5 text-sm flex items-center gap-1.5 font-normal rounded-full cursor-pointer bg-secondary/60 hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all duration-200 group"
-          onClick={() => removeFilter(filterId, optionId)}
-        >
-          <span className="text-muted-foreground group-hover:text-destructive/70 capitalize">{filterLabel}:</span>
-          <span className="font-semibold">{optionLabel}</span>
-          <X className="w-3.5 h-3.5 ml-1 text-muted-foreground opacity-60 group-hover:opacity-100 group-hover:text-destructive transition-colors" />
-        </Badge>
-      ))}
+      {activeFilters.map(
+        ({ filterId, filterLabel, optionId, optionLabel }, index) => (
+          <Badge
+            key={`${filterId}-${optionId}-${index}`}
+            variant="secondary"
+            className="px-3 py-1.5 text-sm flex items-center gap-1.5 font-normal rounded-full cursor-pointer bg-secondary/60 hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all duration-200 group"
+            onClick={() => removeFilter(filterId, optionId)}
+          >
+            <span className="text-muted-foreground group-hover:text-destructive/70">
+              {tCommon(`Entities.${filterLabel}`, { count: 1 })}:
+            </span>
+            <span className="font-semibold">{optionLabel}</span>
+            <X className="w-3.5 h-3.5 ml-1 text-muted-foreground opacity-60 group-hover:opacity-100 group-hover:text-destructive transition-colors" />
+          </Badge>
+        ),
+      )}
 
       <Badge
         variant="ghost"
         className="px-3 py-1.5 text-sm font-medium cursor-pointer hover:bg-destructive/10 text-destructive/70 hover:text-destructive rounded-full transition-all duration-200"
         onClick={clearAll}
       >
-        {t("clear_all") || "Clear All"}
+        {tCommon("Actions.clear_all")}
       </Badge>
     </div>
   );

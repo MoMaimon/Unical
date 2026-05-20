@@ -6,7 +6,7 @@ import { NavbarSearch } from "./navbar-search";
 
 export default async function NavBar() {
   const locale = await getLocale();
-  const t = await getTranslations("NavBar");
+  const t = await getTranslations();
 
   return (
     <nav className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/60 backdrop-blur-md">
@@ -23,12 +23,12 @@ export default async function NavBar() {
           <LanguageSwitcher currentLocale={locale}></LanguageSwitcher>
           <Button variant={"ghost"} asChild>
             <Link href="/courses" className="text-xl">
-              {t("courses")}
+              {t("Entities.course", { count: 100 })}
             </Link>
           </Button>
           <Button variant={"ghost"} asChild>
             <Link href="/colleges" className="text-xl">
-              {t("colleges")}
+              {t("Entities.college",{ count: 100 })}
             </Link>
           </Button>
         </div>
