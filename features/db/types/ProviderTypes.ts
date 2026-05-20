@@ -27,6 +27,13 @@ export type PopulatedCourse = Prisma.CoursesGetPayload<{
   };
 }>;
 
+export type PopulatedSection = Prisma.SectionsGetPayload<{
+  include: {
+    lecturer: true;
+    times: true;
+  };
+}>;
+
 export type PopulatedCourseWithSections = Prisma.CoursesGetPayload<{
   include: {
     degree: true;

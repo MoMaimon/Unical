@@ -31,11 +31,14 @@ export interface SearchCourse extends Omit<
 
 export interface Section {
   id: string;
-  course: string;
-  lecturer: string;
-  schedule: SchedulePart[];
-  sectionNo: number;
+  courseId: string;
+  lecturerId: string; 
   status: number;
+  sectionNo: number;
+
+  course: Course;
+  schedule: Times[];
+  
 }
 
 export interface Lecturer {
@@ -43,7 +46,7 @@ export interface Lecturer {
   name: string;
 }
 
-export interface SchedulePart {
+export interface Times {
   id: string;
   day: number[];
   startTime: string;
