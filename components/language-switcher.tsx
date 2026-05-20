@@ -1,23 +1,31 @@
 "use client";
 
 import { useTransition } from "react";
-
 import { Button } from "@/components/ui/button";
 import { setLocale } from "@/lib/locale";
+import { locales, localeNames, Locale } from "@/i18n/config";
 
 export function LanguageSwitcher({ currentLocale }: { currentLocale: string }) {
   const [isPending, startTransition] = useTransition();
 
-  const toggleLanguage = () => {
-    const nextLocale = currentLocale === "en" ? "ar" : "en";
+  const handleLanguageChange = (nextLocale: Locale) => {
     startTransition(() => {
       setLocale(nextLocale);
     });
   };
 
   return (
-    <Button variant="outline" onClick={toggleLanguage} disabled={isPending}>
-      {currentLocale === "en" ? "العربية" : "English"}
-    </Button>
+    <div className="flex gap-2">
+      {locales.map((loc) => (
+        <Button
+          key={loc}
+          variant={currentLocale === loc ? "default" : "outline"}
+          onClick={() => handleLanguageChange(loc)}
+          disabled={isPending || currentLocale === loc}
+        >
+          {localeNames[loc]}
+        </Button>
+      ))}
+    </div>
   );
 }
