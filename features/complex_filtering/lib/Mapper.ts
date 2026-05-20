@@ -1,0 +1,83 @@
+import Command from "../Command";
+
+export interface Mapper {
+  dictionary: Record<string, { dbField: string; type: string }>;
+  translate(command: Command): string[];
+}
+
+export const CourseMapper: Mapper = class {
+  static dictionary: Record<string, { dbField: string; type: string }> = {
+    code: { dbField: "courseCode", type: "string" },
+    arabicName: { dbField: "arabicName", type: "string" },
+    englishName: { dbField: "englishName", type: "string" },
+    credits: { dbField: "creditHours", type: "number" },
+
+    department: { dbField: "department.englishName", type: "string" },
+    lecturer: { dbField: "sections.lecturer.name", type: "string" },
+    isOnline: { dbField: "sections.times.isOnline", type: "boolean" },
+
+    degreeId: { dbField: "degreeId", type: "string" },
+    departmentId: { dbField: "departmentId", type: "string" },
+    collegeId: { dbField: "department.collegeId", type: "string" },
+  };
+
+  static translate(command: Command): any[] {
+    const mapRule = this.dictionary[command.property];
+    if (!mapRule) {
+      throw new Error(`Invalid filter property: ${command.property}`);
+    }
+
+    command.property = mapRule.dbField;
+    let val: any = command.value;
+
+    if (val !== undefined && val !== null) {
+      if (val === "true") {
+        val = true;
+      } else if (val === "false") {
+        val = false;
+      } else if (mapRule.type === "number") {
+        val = Number(val);
+        if (isNaN(val))
+          throw new Error(`Property ${command.property} must be a number`);
+      }
+    }
+
+    return [command.property, command.operator, val];
+  }
+};
+
+export const SectionMapper: Mapper = class {
+  static dictionary: Record<string, { dbField: string; type: string }> = {
+    lecturer: { dbField: "lecturer.name", type: "string" },
+    courseCode: { dbField: "course.courseCode", type: "string" },
+    courseArabicName: { dbField: "course.arabicName", type: "string" },
+    courseEnglishName: { dbField: "course.englishName", type: "string" },
+    isOnline: { dbField: "times.isOnline", type: "boolean" },
+    room: { dbField: "times.room", type: "string" },
+    days: { dbField: "times.days", type: "number" },
+  };
+
+  static translate(command: Command): any[] {
+    const mapRule = this.dictionary[command.property];
+    if (!mapRule) {
+      throw new Error(`Invalid filter property: ${command.property}`);
+    }
+
+    command.property = mapRule.dbField;
+    let val: any = command.value;
+
+    if (val !== undefined && val !== null) {
+      if (val === "true") {
+        val = true;
+      } else if (val === "false") {
+        val = false;
+      } else if (mapRule.type === "number") {
+        val = Number(val);
+        if (isNaN(val))
+          throw new Error(`Property ${command.property} must be a number`);
+      }
+    }
+
+    return [command.property, command.operator, val];
+  }
+};

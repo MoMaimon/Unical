@@ -1,0 +1,39 @@
+classDiagram
+    class Strategy{
+        <<interface>>
+        +parse(Converter, QueryFilter, Mapper) Filter
+    }
+
+    class TokenStrategy{
+        +parse(Converter, QueryFilter, Mapper) Filter
+    }
+
+    class Convertor {
+        <<interface>>
+        +doForCommandWithoutValue(Command) Filter
+        +doForCommandWithValue(Command) Filter
+    }
+
+    class PrismaConvertor {
+        +doForCommandWithoutValue(Command) Filter
+        +doForCommandWithValue(Command) Filter
+    }
+
+    class Filter {
+        +Record~string, any~ whereParams
+    }
+    class Command{
+        -String property
+        -String operator
+        -String value
+
+        +accept(Convertor, Mapper) Filter
+    }
+
+    TokenStrategy --|> Strategy
+    PrismaConvertor --|> Convertor
+
+    Strategy ..> Convertor : uses
+    Strategy ..> Filter : uses
+    Convertor ..> Filter : uses
+    Convertor ..> Command : uses

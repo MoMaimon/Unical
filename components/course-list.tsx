@@ -1,8 +1,4 @@
-import {
-  getCoursesPage,
-  getTotalPages,
-} from "@/features/scraping/server/db/repository/course_repository";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import {
   Card,
   CardContent,
@@ -14,40 +10,57 @@ import {
 import Pages from "./search_components/pagination";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import { ProviderFactory } from "@/features/db/providers/ProviderFactory";
+import Link from "next/link";
 
 export default async function CourseList({
   dbParams,
   sortBy,
   groupBy,
 }: {
-  dbParams: { page: number; limit: number; filter: Record<string, any> };
+  dbParams: { page: number; limit: number; filter?: string };
   sortBy: string | undefined;
   groupBy: string;
 }) {
-  const courses = await getCoursesPage(dbParams);
-  const totalPages = await getTotalPages(dbParams);
+  const provider = ProviderFactory.getProvider("BAU");
+
+  const locale = await getLocale();
+
+  const nameField = locale === "ar" ? "arabicName" : "englishName";
+
+  const result = await provider.getCourses({
+    page: dbParams.page,
+    limit: dbParams.limit,
+    filter: dbParams.filter,
+    sort:
+      sortBy === "name"
+        ? [{ field: nameField, direction: "asc" }]
+        : sortBy === "hours"
+          ? [{ field: "creditHours", direction: "desc" }]
+          : undefined,
+  });
+
+  const courses = result.data;
+  const totalPages = result.totalPages;
   const t = await getTranslations("Courses");
-
-  let processed = [...courses];
-
-  if (sortBy === "name") {
-    processed.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortBy === "hours") {
-    processed.sort((a, b) => b.hours - a.hours);
-  }
 
   let displayData: Record<string, typeof courses> = {};
 
-  type GroupableKey = "degree" | "college" | "department";
-  const isValidGroup = (key: string): key is GroupableKey =>
-    ["degree", "college", "department"].includes(key);
-
-  if (groupBy === "none" || !isValidGroup(groupBy)) {
-    displayData = { "All Courses": processed };
+  if (groupBy === "none") {
+    displayData = { "All Courses": courses };
   } else {
-    displayData = processed.reduce(
+    displayData = courses.reduce(
       (acc, course) => {
-        const groupName = course[groupBy]?.name || "Other";
+        let groupEntity: any;
+
+        if (groupBy === "college") {
+          groupEntity = (course as any).department?.college;
+        } else {
+          groupEntity = (course as any)[groupBy];
+        }
+
+        const groupName = groupEntity?.[nameField] || "Other";
+
         if (!acc[groupName]) acc[groupName] = [];
         acc[groupName].push(course);
         return acc;
@@ -76,20 +89,26 @@ export default async function CourseList({
 
             <div className="grid gap-5 grid-cols-[repeat(auto-fill,minmax(max(350px,30%),1fr))]">
               {groupCourses.map((course) => (
-                <Card key={course._id}>
+                <Card key={course.id}>
                   <CardHeader>
-                    <CardTitle>{course.name}</CardTitle>
-                    <CardDescription>{course.department.name}</CardDescription>
+                    <CardTitle>{course[nameField]}</CardTitle>
+                    <CardDescription>
+                      {(course as any).department?.[nameField]}
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="text-sm text-muted-foreground">
-                      <li>{course.degree.name}</li>
-                      <li>{course.college.name}</li>
+                      <li>{(course as any).degree?.[nameField]}</li>
+                      <li>{course.department?.college?.[nameField]}</li>
                     </ul>
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Badge variant="outline">{course.hours} Credit Hours</Badge>
-                    <Button>View Sections</Button>
+                    <Badge variant="outline">
+                      {course.creditHours} Credit Hours
+                    </Badge>
+                    <Link href={`courses/${course.id}`}>
+                      <Button>View Sections</Button>
+                    </Link>
                   </CardFooter>
                 </Card>
               ))}
