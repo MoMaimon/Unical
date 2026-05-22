@@ -43,7 +43,7 @@ export default async function SectionList({
                   {t("Entities.section", { count: -1 })} {section.sectionNo}
                 </CardTitle>
                 <Badge variant={isOpen ? "default" : "secondary"}>
-                  {isOpen ? "Open" : "Closed"}
+                  {isOpen ? t("Status.open") : t("Status.closed")}
                 </Badge>
               </div>
               {section.lecturer && (
@@ -111,7 +111,7 @@ export default async function SectionList({
                 disabled={!isOpen}
               >
                 <Plus className="h-4 w-4" />
-                Add
+                {t("Actions.add")}
               </Button>
             </CardFooter>
           </Card>

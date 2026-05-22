@@ -3,7 +3,8 @@
     "search": "Search",
     "next": "Next",
     "previous": "Previous",
-    "clear_all": "Clear All"
+    "clear_all": "Clear All",
+    "add": "add"
   },
   "Entities": {
     "degree": "{count, plural, =1 {Degree} other {Degrees}}",
@@ -15,5 +16,9 @@
   },
   "Messages": {
     "no_results": "No results found."
+  },
+  "Status": {
+    "open": "open",
+    "closed": "closed"
   }
 }

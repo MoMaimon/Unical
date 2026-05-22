@@ -3,7 +3,8 @@
     "search": "بحث",
     "next": "التالي",
     "previous": "السابق",
-    "clear_all": "مسح الكل"
+    "clear_all": "مسح الكل",
+    "add": "إضافة"
   },
   "Entities": {
     "degree": "{count, plural, =1 {الدرجة العلمية} other {الدرجات العلمية}}",
@@ -15,5 +16,9 @@
   },
   "Messages": {
     "no_results": "لم يتم العثور على نتائج."
+  },
+  "Status": {
+    "open": "متاح",
+    "closed": "مغلق"
   }
 }
