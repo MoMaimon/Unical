@@ -1,13 +1,26 @@
-import {getRequestConfig} from 'next-intl/server';
-import { cookies } from 'next/headers';
- 
+import { getRequestConfig } from "next-intl/server";
+import { cookies } from "next/headers";
+import { defaultLocale, locales } from "./config";
+
 export default getRequestConfig(async () => {
-  // Static for now, we'll change this later
   const store = await cookies();
-  const locale = store.get('locale')?.value || 'en';
- 
+  const savedLocale = store.get("locale")?.value;
+  const locale: string = locales.includes(savedLocale as any)
+    ? savedLocale!
+    : defaultLocale;
+
+  const common = (await import(`./messages/${locale}/common.json`)).default;
+  const home = (await import(`./messages/${locale}/home.json`)).default;
+  const courses = (await import(`./messages/${locale}/courses.json`)).default;
+  const layout = (await import(`./messages/${locale}/layout.json`)).default;
+
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default
+    messages: {
+      ...common,
+      Home: home,
+      Courses: courses,
+      Layout: layout,
+    },
   };
 });

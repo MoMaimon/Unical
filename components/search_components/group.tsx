@@ -35,10 +35,11 @@ export default function ({ options }: GroupByProps) {
     },
     [searchParams, router],
   );
-  const t = useTranslations("Courses.GroupBy");
+  const tCourses = useTranslations("Courses.GroupBy");
+  const tCommon = useTranslations();
   return (
     <ButtonGroup>
-      <ButtonGroupText>{t("group_by")}</ButtonGroupText>
+      <ButtonGroupText>{tCourses("title")}</ButtonGroupText>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -46,13 +47,13 @@ export default function ({ options }: GroupByProps) {
             variant={currentGroup !== "none" ? "default" : "outline"}
             className="capitalize border-0"
           >
-            {t(currentGroup)}
+            {tCourses(currentGroup)}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           {options.map((option) => (
             <DropdownMenuItem onClick={() => handleGroup(option)} key={option}>
-              {t(option)}
+              {option}
             </DropdownMenuItem>
           ))}
 
@@ -60,7 +61,7 @@ export default function ({ options }: GroupByProps) {
             onClick={() => handleGroup("none")}
             variant="destructive"
           >
-            {t("none")}
+            {tCourses("none")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

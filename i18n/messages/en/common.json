@@ -1,0 +1,24 @@
+{
+  "Actions": {
+    "search": "Search",
+    "next": "Next",
+    "previous": "Previous",
+    "clear_all": "Clear All",
+    "add": "add"
+  },
+  "Entities": {
+    "degree": "{count, plural, =1 {Degree} other {Degrees}}",
+    "college": "{count, plural, =1 {College} other {Colleges}}",
+    "department": "{count, plural, =1 {Department} other {Departments}}",
+    "course": "{count, plural, =1 { Course } other {Courses}}",
+    "section": "{count, plural, =0 {No Section Available} =1 { 1 Section} =-1 {Section} other{ # Sections}}",
+    "credit_hours": "{count,plural, =1 { # Credit Hour} =-1 {Credit Hours} other { # Credit Hours}}"
+  },
+  "Messages": {
+    "no_results": "No results found."
+  },
+  "Status": {
+    "open": "open",
+    "closed": "closed"
+  }
+}

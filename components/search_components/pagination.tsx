@@ -33,7 +33,7 @@ export default function Pages({ totalPages }: PagesProps) {
 
   const allPages = generatePagination(currentPage, totalPages);
 
-  const t = useTranslations("Courses");
+  const t = useTranslations("Actions");
 
   return (
     <Pagination>

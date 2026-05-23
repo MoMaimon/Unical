@@ -1,0 +1,24 @@
+{
+  "Actions": {
+    "search": "بحث",
+    "next": "التالي",
+    "previous": "السابق",
+    "clear_all": "مسح الكل",
+    "add": "إضافة"
+  },
+  "Entities": {
+    "degree": "{count, plural, =1 {الدرجة العلمية} other {الدرجات العلمية}}",
+    "college": "{count, plural, =1 {الكلية} other {الكليات}}",
+    "department": "{count, plural, =1 {القسم} other {الأقسام}}",
+    "course": "{count, plural, =1 {المادة} other {المواد}}",
+    "section": "{count, plural, =0 {لا توجد شعب متاحة} =1 {شعبة واحدة} =-1 {شعبة} other{ # شعب}}",
+    "credit_hours": "{count,plural, =1 { ساعة واحدة} =-1 {عدد الساعات} other { # ساعات}}"
+  },
+  "Messages": {
+    "no_results": "لم يتم العثور على نتائج."
+  },
+  "Status": {
+    "open": "متاح",
+    "closed": "مغلق"
+  }
+}

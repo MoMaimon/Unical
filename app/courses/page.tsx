@@ -38,7 +38,7 @@ export default async function Courses({
     provider.getDepartments(),
   ]);
 
-  const populatedFilters = getPopulatedFilters(degrees, colleges, departments);
+  const populatedFilters = await getPopulatedFilters(degrees, colleges, departments);
 
   const filterConditions: string[] = [];
   filterConfig.forEach((filter) => {

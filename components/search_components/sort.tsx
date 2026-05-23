@@ -31,7 +31,7 @@ export default function Sort({ options }: SortProps) {
   const t = useTranslations("Courses.Sort");
   return (
     <ButtonGroup>
-      <ButtonGroupText>{t("sort")}</ButtonGroupText>
+      <ButtonGroupText>{t("title")}</ButtonGroupText>
       {options.map((option) => (
         <Button
           variant={currentSort === option ? "default" : "outline"}

@@ -1,10 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { PopulatedSection } from "@/features/db/types/ProviderTypes";
 
 import { User, Clock, Wifi, MapPin, Plus } from "lucide-react";
-
+import { getTranslations } from "next-intl/server";
 
 function getDaysFromMask(mask: number): number[] {
   const activeDays: number[] = [];
@@ -18,7 +25,12 @@ function getDaysFromMask(mask: number): number[] {
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-export default async function SectionList({ sections }: { sections: PopulatedSection[] }) {
+export default async function SectionList({
+  sections,
+}: {
+  sections: PopulatedSection[];
+}) {
+  const t = await getTranslations();
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {sections.map((section) => {
@@ -28,10 +40,10 @@ export default async function SectionList({ sections }: { sections: PopulatedSec
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-2">
                 <CardTitle className="text-lg">
-                  Section {section.sectionNo}
+                  {t("Entities.section", { count: -1 })} {section.sectionNo}
                 </CardTitle>
                 <Badge variant={isOpen ? "default" : "secondary"}>
-                  {isOpen ? "Open" : "Closed"}
+                  {isOpen ? t("Status.open") : t("Status.closed")}
                 </Badge>
               </div>
               {section.lecturer && (
@@ -94,9 +106,12 @@ export default async function SectionList({ sections }: { sections: PopulatedSec
             </CardContent>
 
             <CardFooter className="pt-0">
-              <Button className="w-full gap-2 cursor-pointer" disabled={!isOpen}>
+              <Button
+                className="w-full gap-2 cursor-pointer"
+                disabled={!isOpen}
+              >
                 <Plus className="h-4 w-4" />
-                Add
+                {t("Actions.add")}
               </Button>
             </CardFooter>
           </Card>

@@ -1,0 +1,21 @@
+{
+  "Sort": {
+    "title": "Sort",
+    "name": "Name",
+    "hours": "Hours"
+  },
+  "GroupBy": {
+    "title": "Group By",
+    "none": "None"
+  },
+  "Filter": {
+    "title": "Filter",
+    "filter_courses": "Filter Courses",
+    "active_filters": "Active Filters",
+    "options" : "{data} options"
+  },
+  "Actions":{
+    "show_sections":"View Section"
+  }
+
+}
